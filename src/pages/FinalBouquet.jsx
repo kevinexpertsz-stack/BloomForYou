@@ -32,13 +32,28 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
 
     if (sharedDataParam && (!bouquetArrangement || bouquetArrangement.length === 0)) {
         try {
-            const sharedData = JSON.parse(decodeURIComponent(escape(atob(sharedDataParam))));
-            displayArrangement = sharedData.bouquetArrangement || [];
-            displayScenery = sharedData.scenery || 'bg3';
-            displayMessage = sharedData.message || '';
-            displayRecipient = sharedData.recipient || '';
-            displaySignoff = sharedData.signoff || '';
-            displaySender = sharedData.sender || '';
+            const raw = JSON.parse(decodeURIComponent(escape(atob(sharedDataParam))));
+            // Expand compact keys back to full field names
+            const expand = (d) => ({
+                bouquetArrangement: (d.b || d.bouquetArrangement || []).map(bloom => ({
+                    uniqueId: bloom.u || bloom.uniqueId,
+                    flowerId: bloom.f || bloom.flowerId,
+                    x: bloom.x, y: bloom.y, z: bloom.z
+                })),
+                scenery: d.s || d.scenery || 'bg3',
+                message: d.m || d.message || '',
+                recipient: d.r || d.recipient || '',
+                signoff: d.sg || d.signoff || '',
+                sender: d.sn || d.sender || '',
+                theme: d.t || d.theme || 'default'
+            });
+            const sharedData = expand(raw);
+            displayArrangement = sharedData.bouquetArrangement;
+            displayScenery = sharedData.scenery;
+            displayMessage = sharedData.message;
+            displayRecipient = sharedData.recipient;
+            displaySignoff = sharedData.signoff;
+            displaySender = sharedData.sender;
         } catch (e) {
             console.error("Failed to parse shared bouquet data", e);
         }
@@ -47,32 +62,34 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     useEffect(() => {
         if (sharedDataParam && setTheme) {
             try {
-                const sharedData = JSON.parse(decodeURIComponent(escape(atob(sharedDataParam))));
-                if (sharedData.theme) {
-                    setTheme(sharedData.theme);
-                }
-            } catch (e) {
-                // Ignore errors here
-            }
+                const raw = JSON.parse(decodeURIComponent(escape(atob(sharedDataParam))));
+                const t = raw.t || raw.theme;
+                if (t) setTheme(t);
+            } catch (e) { }
         }
     }, [sharedDataParam, setTheme]);
 
     const selectedScenery = sceneries[displayScenery] || sceneries['bg3'];
 
     const handleCopyLink = () => {
-        const shareData = {
-            bouquetArrangement: displayArrangement,
-            scenery: displayScenery,
-            message: displayMessage,
-            recipient: displayRecipient,
-            signoff: displaySignoff,
-            sender: displaySender,
-            theme: theme
+        // Compact payload: abbreviated keys + integer coords + no redundant 'name'
+        const compact = {
+            b: displayArrangement.map(bloom => ({
+                u: bloom.uniqueId,
+                f: bloom.flowerId,
+                x: Math.round(bloom.x),
+                y: Math.round(bloom.y),
+                z: Math.round(bloom.z)
+            })),
+            s: displayScenery,
+            m: displayMessage,
+            r: displayRecipient,
+            sg: displaySignoff,
+            sn: displaySender,
+            t: theme
         };
-        // Encode state to base64
-        const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+        const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
         const shareUrl = `${window.location.origin}/final?data=${base64Data}`;
-
         navigator.clipboard.writeText(shareUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
