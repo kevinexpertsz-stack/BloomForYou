@@ -163,11 +163,11 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
 
                 {/* Both buttons side by side above canvas */}
                 <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '400px', margin: '0 auto 0.6rem auto' }}>
-                    <button className="btn btn-outline" onClick={handleRandomArrange} style={{ flex: 1, fontSize: '0.75rem', padding: '0.45rem 0.6rem' }}>
-                        <Shuffle size={13} /> Random Arrangement
+                    <button className="btn btn-outline" onClick={handleRandomArrange} style={{ flex: 1, fontSize: '0.65rem', padding: '0.35rem 0.4rem', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>
+                        <Shuffle size={11} /> Random Arrangement
                     </button>
-                    <button className="btn btn-outline" onClick={handleCycleScenery} style={{ flex: 1, fontSize: '0.75rem', padding: '0.45rem 0.6rem' }}>
-                        <ImageIcon size={13} /> Change Scenery
+                    <button className="btn btn-outline" onClick={handleCycleScenery} style={{ flex: 1, fontSize: '0.65rem', padding: '0.35rem 0.4rem', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>
+                        <ImageIcon size={11} /> Change Scenery
                     </button>
                 </div>
 
