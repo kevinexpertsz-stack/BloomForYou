@@ -47,17 +47,12 @@ const Home = ({ theme, setTheme }) => {
                 </p>
 
                 <button
-                    className="btn delay-3 animate-fade-in"
+                    className="btn btn-primary delay-3 animate-fade-in"
                     onClick={() => navigate('/select')}
                     style={{
                         padding: '1.1rem 2rem',
-                        fontSize: '0.9rem',
+                        fontSize: '1rem',
                         marginBottom: '3rem',
-                        backgroundColor: 'var(--color-text)',
-                        color: 'var(--color-bg)',
-                        borderRadius: '0',
-                        fontFamily: 'var(--font-mono)',
-                        letterSpacing: '2px',
                         width: '80%',
                         maxWidth: '300px'
                     }}
