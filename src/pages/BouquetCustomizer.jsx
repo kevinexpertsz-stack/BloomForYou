@@ -14,7 +14,7 @@ const sceneries = [
     { id: 'bg9', name: 'Scene 09', bg: '#f9f6f2', bgImage: '/background/Scene 09.jpg' }
 ];
 
-const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArrangement, scenery, setScenery }) => {
+const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArrangement, scenery, setScenery, theme, setTheme }) => {
     const navigate = useNavigate();
     const containerRef = useRef(null);
 
@@ -53,8 +53,8 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                             uniqueId: `${item.id}-${i}`,
                             flowerId: item.flower.id,
                             name: item.flower.name,
-                            x: 100 + Math.cos(angle) * radius,
-                            y: 200 + Math.sin(angle) * radius,
+                            x: 60 + Math.cos(angle) * radius,
+                            y: 110 + Math.sin(angle) * radius,
                             z: nextZIndex
                         });
                         nextZIndex++;
@@ -88,8 +88,8 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
             const radius = Math.random() * 50;
             return {
                 ...bloom,
-                x: 100 + Math.cos(angle) * radius,
-                y: 200 + Math.sin(angle) * radius,
+                x: 60 + Math.cos(angle) * radius,
+                y: 110 + Math.sin(angle) * radius,
                 z: Math.floor(Math.random() * 20)
             };
         });
@@ -102,9 +102,9 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
 
         if (containerRef.current) {
             const rect = containerRef.current.getBoundingClientRect();
-            // Calculate current visual scale from container width/height vs native 400/711
+            // Calculate current visual scale from container width/height vs native 400/500
             const scaleX = rect.width / 400;
-            const scaleY = rect.height / 711;
+            const scaleY = rect.height / 500;
             const pointerX = (e.clientX - rect.left) / scaleX;
             const pointerY = (e.clientY - rect.top) / scaleY;
             setDragOffset({ x: pointerX - currentX, y: pointerY - currentY });
@@ -125,7 +125,7 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
 
         const rect = containerRef.current.getBoundingClientRect();
         const scaleX = rect.width / 400;
-        const scaleY = rect.height / 711;
+        const scaleY = rect.height / 500;
         const x = (e.clientX - rect.left) / scaleX - dragOffset.x;
         const y = (e.clientY - rect.top) / scaleY - dragOffset.y;
 
@@ -155,7 +155,7 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
 
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', display: 'flex', flexDirection: 'column', flex: 1 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', width: '100%', transform: 'scale(1.1)', transformOrigin: 'top center' }}>
                 <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '1rem' }}>
                     <ThemeToggle theme={theme} setTheme={setTheme} />
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
@@ -180,11 +180,10 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                         ref={containerRef}
                         style={{
                             width: '100%',
-                            maxWidth: '460px',
-                            aspectRatio: '9 / 16',
+                            maxWidth: '400px',
+                            height: '500px',
                             overflow: 'hidden',
                             position: 'relative',
-                            zIndex: 0,
                             touchAction: 'none' // Prevents scrolling while dragging on mobile
                         }}
                     >
@@ -225,11 +224,11 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                                 key={bloom.uniqueId}
                                 style={{
                                     position: 'absolute',
-                                    left: `${(bloom.x / 400) * 100}%`,
-                                    top: `${(bloom.y / 711) * 100}%`,
+                                    left: `${bloom.x}px`,
+                                    top: `${bloom.y}px`,
                                     zIndex: bloom.z,
-                                    width: `${(180 / 400) * 100}%`,
-                                    aspectRatio: '1 / 1',
+                                    width: '180px',
+                                    height: '180px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',

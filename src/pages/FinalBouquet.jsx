@@ -88,16 +88,15 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Fresh Blooms Just For You!</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', justifyContent: 'center', width: '100%', maxWidth: '1000px', marginBottom: '5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', justifyContent: 'center', width: '100%', maxWidth: '1000px', transform: 'scale(1.05)', transformOrigin: 'top center', marginBottom: '5rem' }}>
 
                     {/* Bouquet Display (Read-Only) */}
                     <div style={{
                         width: '100%',
-                        maxWidth: '460px',
-                        aspectRatio: '9 / 16',
+                        maxWidth: '400px',
+                        height: '500px',
                         overflow: 'hidden',
                         position: 'relative',
-                        zIndex: 0,
                     }}>
                         {/* Masked Scenery Layer */}
                         <div style={{
@@ -135,11 +134,11 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                 key={bloom.uniqueId}
                                 style={{
                                     position: 'absolute',
-                                    left: `${(bloom.x / 400) * 100}%`,
-                                    top: `${(bloom.y / 711) * 100}%`,
+                                    left: `${bloom.x}px`,
+                                    top: `${bloom.y}px`,
                                     zIndex: bloom.z,
-                                    width: `${(180 / 400) * 100}%`,
-                                    aspectRatio: '1 / 1',
+                                    width: '180px',
+                                    height: '180px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
