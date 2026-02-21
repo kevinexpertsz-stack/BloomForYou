@@ -28,8 +28,8 @@ const Home = ({ theme, setTheme }) => {
                             setTheme(themeSequence[nextIndex]);
                         }}
                         style={{
-                            width: '200px',
-                            height: '200px',
+                            width: 'clamp(100px, 25vw, 150px)',
+                            height: 'clamp(100px, 25vw, 150px)',
                             objectFit: 'contain',
                             filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.05))',
                             cursor: 'pointer',
@@ -38,18 +38,29 @@ const Home = ({ theme, setTheme }) => {
                     />
                 </div>
 
-                <h1 className="delay-1 animate-fade-in" style={{ fontFamily: 'var(--font-title)', fontSize: 'clamp(2rem, 15vw, 4.95rem)', marginBottom: '1.2rem', letterSpacing: '2px', color: 'var(--color-text)', fontWeight: 'normal', whiteSpace: 'nowrap' }}>
+                <h1 className="delay-1 animate-fade-in" style={{ fontFamily: 'var(--font-title)', fontSize: 'clamp(2.5rem, 12vw, 4.2rem)', marginBottom: '0.5rem', letterSpacing: '1px', color: 'var(--color-text)', fontWeight: 'normal', whiteSpace: 'nowrap' }}>
                     BloomsForYou
                 </h1>
 
-                <p className="delay-2 animate-fade-in" style={{ fontSize: '0.85rem', marginBottom: '8rem', color: 'var(--color-text-light)', fontFamily: 'var(--font-mono)', letterSpacing: '2px', lineHeight: '1.5', textTransform: 'uppercase' }}>
+                <p className="delay-2 animate-fade-in" style={{ fontSize: '0.85rem', marginBottom: '3rem', color: 'var(--color-text)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', lineHeight: '1.6', textTransform: 'uppercase' }}>
                     Forever Flowers<br />Just For You
                 </p>
 
                 <button
-                    className="btn btn-primary delay-3 animate-fade-in"
+                    className="btn delay-3 animate-fade-in"
                     onClick={() => navigate('/select')}
-                    style={{ padding: '1.42rem 3.42rem', fontSize: '1.36rem', marginBottom: '2rem' }}
+                    style={{
+                        padding: '1.1rem 2rem',
+                        fontSize: '0.9rem',
+                        marginBottom: '3rem',
+                        backgroundColor: 'var(--color-text)',
+                        color: 'var(--color-bg)',
+                        borderRadius: '0',
+                        fontFamily: 'var(--font-mono)',
+                        letterSpacing: '2px',
+                        width: '80%',
+                        maxWidth: '300px'
+                    }}
                 >
                     Pick Your Blooms
                 </button>
