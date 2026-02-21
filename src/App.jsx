@@ -11,49 +11,14 @@ const GlobalHeader = ({ theme, setTheme }) => {
   const location = useLocation();
   if (location.pathname === '/') return null; // Hide on Home page
 
-  const isSharedLink = location.search.includes('data=');
-
-  const themeSequence = ['default', 'sunflower', 'blueflower', 'orchid', 'alstromeria', 'ranuculus'];
-  const themeImages = {
-    'default': '/Main.png',
-    'sunflower': '/Main 2.png',
-    'blueflower': '/Main 3.png',
-    'orchid': '/Main 4.png',
-    'alstromeria': '/Main 5.png',
-    'ranuculus': '/Main 6.png'
-  };
-
   return (
     <header style={{
       paddingTop: '0.5rem',
       paddingBottom: '1.5rem',
       textAlign: 'center',
       zIndex: 100,
-      position: 'relative' // Changed to relative to anchor absolute child
+      position: 'relative'
     }}>
-
-      {!isSharedLink && (
-        <div style={{ position: 'absolute', left: '2rem', top: '1rem', zIndex: 101 }}>
-          <img
-            src={themeImages[theme] || themeImages['default']}
-            alt="Toggle Theme"
-            title="Click to modify colors!"
-            onClick={() => {
-              const currentIndex = themeSequence.indexOf(theme);
-              const nextIndex = (currentIndex + 1) % themeSequence.length;
-              setTheme(themeSequence[nextIndex]);
-            }}
-            style={{
-              width: '45px',
-              height: '45px',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))',
-              cursor: 'pointer',
-              transition: 'var(--transition)'
-            }}
-          />
-        </div>
-      )}
       <h1 style={{
         fontFamily: 'var(--font-title)',
         fontSize: '2.37rem',
@@ -121,6 +86,8 @@ function App() {
                 <BloomSelection
                   selectedBlooms={selectedBlooms}
                   setSelectedBlooms={setSelectedBlooms}
+                  theme={theme}
+                  setTheme={setTheme}
                 />
               }
             />
@@ -133,6 +100,8 @@ function App() {
                   setBouquetArrangement={setBouquetArrangement}
                   scenery={scenery}
                   setScenery={setScenery}
+                  theme={theme}
+                  setTheme={setTheme}
                 />
               }
             />
@@ -148,6 +117,8 @@ function App() {
                   setSignoff={setSignoff}
                   sender={sender}
                   setSender={setSender}
+                  theme={theme}
+                  setTheme={setTheme}
                 />
               }
             />

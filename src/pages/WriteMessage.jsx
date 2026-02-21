@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Flower } from 'lucide-react';
 import '../index.css';
+import ThemeToggle from '../components/ThemeToggle';
 
-const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, setSignoff, sender, setSender }) => {
+const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, setSignoff, sender, setSender, theme, setTheme }) => {
     const navigate = useNavigate();
 
     return (
@@ -15,7 +16,10 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
             <div style={{ position: 'absolute', bottom: '10%', right: '5%', opacity: 0.2 }}><Flower size={40} color="var(--color-primary)" /></div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', zIndex: 1, transform: 'scale(1.1)', transformOrigin: 'top center' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase', zIndex: 1 }}>WRITE YOUR MESSAGE</h2>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '2rem', zIndex: 1 }}>
+                    <ThemeToggle theme={theme} setTheme={setTheme} />
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase', zIndex: 1 }}>WRITE YOUR MESSAGE</h2>
+                </div>
 
                 <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 1rem', width: '100%' }}>
                     <div style={{

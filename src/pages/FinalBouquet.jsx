@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Link as LinkIcon, Check } from 'lucide-react';
 import '../index.css';
+import ThemeToggle from '../components/ThemeToggle';
 
 const sceneries = {
     'bg2': { bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
@@ -82,7 +83,10 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '4rem', fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Fresh Blooms Just For You!</h2>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '4rem' }}>
+                    <ThemeToggle theme={theme} setTheme={setTheme} />
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Fresh Blooms Just For You!</h2>
+                </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', justifyContent: 'center', width: '100%', maxWidth: '1000px', marginBottom: '5rem' }}>
 

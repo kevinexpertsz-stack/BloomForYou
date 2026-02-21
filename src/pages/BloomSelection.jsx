@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { flowerData } from '../data/flowers';
 import '../index.css';
+import ThemeToggle from '../components/ThemeToggle';
 
-const BloomSelection = ({ selectedBlooms, setSelectedBlooms }) => {
+const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) => {
     const navigate = useNavigate();
     const [activeCategory, setActiveCategory] = useState(null);
     const [activeFlower, setActiveFlower] = useState(null);
@@ -71,7 +72,10 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms }) => {
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', flex: 1, display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <h2 className="delay-1 animate-fade-in" style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Select Your Blooms</h2>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '2rem' }}>
+                    <ThemeToggle theme={theme} setTheme={setTheme} />
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Select Your Blooms</h2>
+                </div>
 
                 <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
 

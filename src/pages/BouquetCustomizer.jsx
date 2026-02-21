@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Shuffle, Image as ImageIcon } from 'lucide-react';
 import '../index.css';
+import ThemeToggle from '../components/ThemeToggle';
 
 const sceneries = [
     { id: 'bg2', name: 'Scene 02', bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
@@ -155,7 +156,10 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '1rem' }}>
+                    <ThemeToggle theme={theme} setTheme={setTheme} />
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
+                </div>
 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem', flexWrap: 'wrap', width: '100%', maxWidth: '380px', margin: '0 auto 1.5rem auto' }}>
                     <button className="btn btn-outline" onClick={handleRandomArrange} style={{ flex: '1 1 140px' }}>
