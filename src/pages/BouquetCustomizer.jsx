@@ -157,15 +157,15 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%', transform: 'scale(1.1)', transformOrigin: 'top center' }}>
                 <h2 style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
 
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2rem' }}>
-                    <button className="btn btn-outline" onClick={handleRandomArrange} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem', flexWrap: 'wrap', width: '100%', maxWidth: '380px', margin: '0 auto 1.5rem auto' }}>
+                    <button className="btn btn-outline" onClick={handleRandomArrange} style={{ flex: '1 1 140px' }}>
                         <Shuffle size={16} /> Random Arrangement
                     </button>
 
                     <button
                         className="btn btn-outline"
                         onClick={handleCycleScenery}
-                        style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                        style={{ flex: '1 1 140px' }}
                     >
                         <ImageIcon size={16} /> Change Scenery
                     </button>
