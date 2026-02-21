@@ -18,79 +18,99 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     const navigate = useNavigate();
     const location = useLocation();
     const [copied, setCopied] = useState(false);
+    const [sharing, setSharing] = useState(false);
+    const [loadedData, setLoadedData] = useState(null);
 
-    // Parse URL parameters for shared state if available
+    // Parse URL parameters
     const queryParams = new URLSearchParams(location.search);
-    const sharedDataParam = queryParams.get('data');
+    const gistParam = queryParams.get('g');
+    const sharedDataParam = queryParams.get('data'); // legacy fallback
 
-    let displayArrangement = bouquetArrangement;
-    let displayScenery = scenery;
-    let displayMessage = message;
-    let displayRecipient = recipient;
-    let displaySignoff = signoff;
-    let displaySender = sender;
+    let displayArrangement = loadedData ? loadedData.bouquetArrangement : bouquetArrangement;
+    let displayScenery = loadedData ? loadedData.scenery : scenery;
+    let displayMessage = loadedData ? loadedData.message : message;
+    let displayRecipient = loadedData ? loadedData.recipient : recipient;
+    let displaySignoff = loadedData ? loadedData.signoff : signoff;
+    let displaySender = loadedData ? loadedData.sender : sender;
 
-    if (sharedDataParam && (!bouquetArrangement || bouquetArrangement.length === 0)) {
+    // Load from GitHub Gist if ?g= param present
+    useEffect(() => {
+        if (!gistParam) return;
+        fetch(`https://api.github.com/gists/${gistParam}`)
+            .then(r => r.json())
+            .then(gist => {
+                const raw = JSON.parse(gist.files['bouquet.json'].content);
+                const expanded = {
+                    bouquetArrangement: (raw.b || []).map(bloom => ({
+                        uniqueId: bloom.u, flowerId: bloom.f,
+                        x: bloom.x, y: bloom.y, z: bloom.z
+                    })),
+                    scenery: raw.s || 'bg3',
+                    message: raw.m || '',
+                    recipient: raw.r || '',
+                    signoff: raw.sg || '',
+                    sender: raw.sn || ''
+                };
+                setLoadedData(expanded);
+                if (raw.t && setTheme) setTheme(raw.t);
+            })
+            .catch(e => console.error('Failed to load shared bouquet', e));
+    }, [gistParam]);
+
+    // Legacy fallback: load from ?data= base64 param
+    useEffect(() => {
+        if (!sharedDataParam || gistParam) return;
         try {
             const raw = JSON.parse(decodeURIComponent(escape(atob(sharedDataParam))));
-            // Expand compact keys back to full field names
-            const expand = (d) => ({
-                bouquetArrangement: (d.b || d.bouquetArrangement || []).map(bloom => ({
+            const expanded = {
+                bouquetArrangement: (raw.b || raw.bouquetArrangement || []).map(bloom => ({
                     uniqueId: bloom.u || bloom.uniqueId,
                     flowerId: bloom.f || bloom.flowerId,
                     x: bloom.x, y: bloom.y, z: bloom.z
                 })),
-                scenery: d.s || d.scenery || 'bg3',
-                message: d.m || d.message || '',
-                recipient: d.r || d.recipient || '',
-                signoff: d.sg || d.signoff || '',
-                sender: d.sn || d.sender || '',
-                theme: d.t || d.theme || 'default'
-            });
-            const sharedData = expand(raw);
-            displayArrangement = sharedData.bouquetArrangement;
-            displayScenery = sharedData.scenery;
-            displayMessage = sharedData.message;
-            displayRecipient = sharedData.recipient;
-            displaySignoff = sharedData.signoff;
-            displaySender = sharedData.sender;
-        } catch (e) {
-            console.error("Failed to parse shared bouquet data", e);
-        }
-    }
-
-    useEffect(() => {
-        if (sharedDataParam && setTheme) {
-            try {
-                const raw = JSON.parse(decodeURIComponent(escape(atob(sharedDataParam))));
-                const t = raw.t || raw.theme;
-                if (t) setTheme(t);
-            } catch (e) { }
-        }
-    }, [sharedDataParam, setTheme]);
+                scenery: raw.s || raw.scenery || 'bg3',
+                message: raw.m || raw.message || '',
+                recipient: raw.r || raw.recipient || '',
+                signoff: raw.sg || raw.signoff || '',
+                sender: raw.sn || raw.sender || ''
+            };
+            setLoadedData(expanded);
+            const t = raw.t || raw.theme;
+            if (t && setTheme) setTheme(t);
+        } catch (e) { console.error('Failed to parse shared data', e); }
+    }, [sharedDataParam]);
 
     const selectedScenery = sceneries[displayScenery] || sceneries['bg3'];
 
-    const handleCopyLink = () => {
-        // Compact payload: abbreviated keys + integer coords + no redundant 'name'
+    const handleCopyLink = async () => {
+        setSharing(true);
         const compact = {
             b: displayArrangement.map(bloom => ({
-                u: bloom.uniqueId,
-                f: bloom.flowerId,
-                x: Math.round(bloom.x),
-                y: Math.round(bloom.y),
-                z: Math.round(bloom.z)
+                u: bloom.uniqueId, f: bloom.flowerId,
+                x: Math.round(bloom.x), y: Math.round(bloom.y), z: Math.round(bloom.z)
             })),
-            s: displayScenery,
-            m: displayMessage,
-            r: displayRecipient,
-            sg: displaySignoff,
-            sn: displaySender,
-            t: theme
+            s: displayScenery, m: displayMessage,
+            r: displayRecipient, sg: displaySignoff,
+            sn: displaySender, t: theme
         };
-        const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-        const shareUrl = `${window.location.origin}/final?data=${base64Data}`;
-        navigator.clipboard.writeText(shareUrl);
+        try {
+            const res = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    public: true,
+                    files: { 'bouquet.json': { content: JSON.stringify(compact) } }
+                })
+            });
+            const data = await res.json();
+            const shareUrl = `${window.location.origin}/final?g=${data.id}`;
+            await navigator.clipboard.writeText(shareUrl);
+        } catch (e) {
+            // Fallback: use base64 in URL
+            const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+            await navigator.clipboard.writeText(`${window.location.origin}/final?data=${base64}`);
+        }
+        setSharing(false);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
