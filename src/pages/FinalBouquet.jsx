@@ -95,25 +95,24 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             sn: displaySender, t: theme
         };
 
-        // Build the compact base64 URL (guaranteed fallback)
+        // Build compact base64 URL (guaranteed fallback)
         const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
         const longUrl = `${window.location.origin}/final?data=${base64}`;
 
         let shareUrl = longUrl;
 
-        // Try is.gd URL shortener (CORS-friendly, free, no auth needed)
+        // Call Vercel serverless proxy → is.gd (server-side, no CORS issues)
         try {
-            const res = await fetch(
-                `https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`,
-                { signal: AbortSignal.timeout(5000) }
-            );
+            const res = await fetch('/api/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: longUrl })
+            });
             if (res.ok) {
-                const short = await res.text();
-                if (short && short.startsWith('https://is.gd/')) {
-                    shareUrl = short.trim();
-                }
+                const data = await res.json();
+                if (data.short) shareUrl = data.short;
             }
-        } catch (e) { /* is.gd failed, use longUrl */ }
+        } catch (e) { /* proxy failed, use longUrl */ }
 
         try {
             await navigator.clipboard.writeText(shareUrl);
@@ -125,6 +124,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
+
 
     // Removed getFlowerStyle - using images
 
