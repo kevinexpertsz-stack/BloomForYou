@@ -38,7 +38,7 @@ const Home = ({ theme, setTheme }) => {
                     />
                 </div>
 
-                <h1 className="delay-1 animate-fade-in" style={{ fontFamily: 'var(--font-title)', fontSize: '4.95rem', marginBottom: '1.2rem', letterSpacing: '2px', color: 'var(--color-text)', fontWeight: 'normal' }}>
+                <h1 className="delay-1 animate-fade-in" style={{ fontFamily: 'var(--font-title)', fontSize: 'clamp(2rem, 15vw, 4.95rem)', marginBottom: '1.2rem', letterSpacing: '2px', color: 'var(--color-text)', fontWeight: 'normal', whiteSpace: 'nowrap' }}>
                     BloomsForYou
                 </h1>
 
