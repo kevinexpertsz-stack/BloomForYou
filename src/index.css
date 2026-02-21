@@ -318,34 +318,3 @@ a {
   margin: 0.4rem 0;
   animation: bounce 1.4s ease-in-out infinite;
 }
-
-/* Flower Full-Screen Burst */
-@keyframes flowerBurst {
-  0% {
-    transform: translate(0, -100px) scale(0) rotate(0deg);
-    opacity: 0;
-  }
-
-  10% {
-    transform: translate(calc(var(--dx) * 0.2vw), 10vh) scale(1) rotate(60deg);
-    opacity: 1;
-  }
-
-  80% {
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(calc(var(--dx) * 1vw), calc(100vh + 100px)) scale(0.8) rotate(var(--rot-end));
-    opacity: 0;
-  }
-}
-
-.flower-burst-particle {
-  position: absolute;
-  pointer-events: none;
-  z-index: 99999;
-  animation: flowerBurst var(--duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  animation-delay: var(--delay);
-  will-change: transform, opacity;
-}
