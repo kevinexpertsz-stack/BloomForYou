@@ -155,7 +155,7 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
 
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', display: 'flex', flexDirection: 'column', flex: 1 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', width: '100%', transform: 'scale(1.1)', transformOrigin: 'top center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', width: '100%', transform: 'scale(0.935)', transformOrigin: 'top center' }}>
                 <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '1rem' }}>
                     <ThemeToggle theme={theme} setTheme={setTheme} />
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
