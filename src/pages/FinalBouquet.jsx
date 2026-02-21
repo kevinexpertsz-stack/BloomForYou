@@ -84,13 +84,13 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                 <h2 style={{ textAlign: 'center', marginBottom: '4rem', fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Fresh Blooms Just For You!</h2>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', justifyContent: 'center', width: '100%', maxWidth: '1000px', transform: 'scale(1.05)', transformOrigin: 'top center', marginBottom: '5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', justifyContent: 'center', width: '100%', maxWidth: '1000px', marginBottom: '5rem' }}>
 
                     {/* Bouquet Display (Read-Only) */}
                     <div style={{
                         width: '100%',
-                        maxWidth: '400px',
-                        height: '500px',
+                        maxWidth: '460px',
+                        aspectRatio: '9 / 16',
                         overflow: 'hidden',
                         position: 'relative',
                     }}>
@@ -130,11 +130,11 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                 key={bloom.uniqueId}
                                 style={{
                                     position: 'absolute',
-                                    left: `${bloom.x}px`,
-                                    top: `${bloom.y}px`,
+                                    left: `${(bloom.x / 400) * 100}%`,
+                                    top: `${(bloom.y / 711) * 100}%`,
                                     zIndex: bloom.z,
-                                    width: '180px',
-                                    height: '180px',
+                                    width: `${(180 / 400) * 100}%`,
+                                    aspectRatio: '1 / 1',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
