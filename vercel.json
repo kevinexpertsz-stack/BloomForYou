@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/s/:code",
+            "destination": "/api/s?id=:code"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

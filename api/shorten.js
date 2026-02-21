@@ -23,7 +23,11 @@ export default async function handler(req, res) {
         const short = await response.text();
 
         if (short && short.startsWith('https://is.gd/')) {
-            return res.status(200).json({ short: short.trim() });
+            const code = short.trim().replace('https://is.gd/', '');
+            // Return both the is.gd URL and the branded bloomforyou URL
+            const host = req.headers.host || 'bloomforyou.vercel.app';
+            const branded = `https://${host}/s/${code}`;
+            return res.status(200).json({ short: short.trim(), branded, code });
         }
         return res.status(500).json({ error: 'Shortener failed', raw: short });
     } catch (e) {

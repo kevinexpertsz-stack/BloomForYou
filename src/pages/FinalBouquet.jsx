@@ -110,7 +110,9 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             });
             if (res.ok) {
                 const data = await res.json();
-                if (data.short) shareUrl = data.short;
+                // Prefer branded bloomforyou URL (bloomforyou.vercel.app/s/CODE)
+                if (data.branded) shareUrl = data.branded;
+                else if (data.short) shareUrl = data.short;
             }
         } catch (e) { /* proxy failed, use longUrl */ }
 
