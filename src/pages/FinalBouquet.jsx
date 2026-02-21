@@ -97,6 +97,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                         aspectRatio: '9 / 16',
                         overflow: 'hidden',
                         position: 'relative',
+                        zIndex: 0,
                     }}>
                         {/* Masked Scenery Layer */}
                         <div style={{

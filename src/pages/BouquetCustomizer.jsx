@@ -184,6 +184,7 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                             aspectRatio: '9 / 16',
                             overflow: 'hidden',
                             position: 'relative',
+                            zIndex: 0,
                             touchAction: 'none' // Prevents scrolling while dragging on mobile
                         }}
                     >
