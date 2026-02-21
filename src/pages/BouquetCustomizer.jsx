@@ -161,21 +161,15 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.5rem', width: '100%', maxWidth: '380px', margin: '0 auto 1.5rem auto' }}>
+                {/* Random Arrangement - above canvas */}
+                <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto 0.6rem auto' }}>
                     <button className="btn btn-outline" onClick={handleRandomArrange} style={{ width: '100%' }}>
                         <Shuffle size={16} /> Random Arrangement
                     </button>
-
-                    <button
-                        className="btn btn-outline"
-                        onClick={handleCycleScenery}
-                        style={{ width: '100%' }}
-                    >
-                        <ImageIcon size={16} /> Change Scenery
-                    </button>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', flex: 1, marginBottom: '0.5rem' }}>
+                {/* Canvas box with Change Scenery overlaid at the top */}
+                <div style={{ display: 'flex', justifyContent: 'center', flex: 1, marginBottom: '0.4rem' }}>
                     <div
                         ref={containerRef}
                         style={{
@@ -184,9 +178,28 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                             height: '500px',
                             overflow: 'hidden',
                             position: 'relative',
-                            touchAction: 'none' // Prevents scrolling while dragging on mobile
+                            touchAction: 'none'
                         }}
                     >
+                        {/* Change Scenery - overlaid inside top of canvas */}
+                        <button
+                            className="btn btn-outline"
+                            onClick={handleCycleScenery}
+                            style={{
+                                position: 'absolute',
+                                top: '10px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                zIndex: 10,
+                                fontSize: '0.75rem',
+                                padding: '0.4rem 1.2rem',
+                                backgroundColor: 'rgba(255,255,255,0.85)',
+                                backdropFilter: 'blur(4px)',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            <ImageIcon size={14} /> Change Scenery
+                        </button>
                         {/* Masked Scenery Layer */}
                         <div style={{
                             position: 'absolute',
