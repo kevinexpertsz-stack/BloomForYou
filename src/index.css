@@ -295,3 +295,26 @@ a {
   visibility: visible;
   transform: translateX(-50%) translateY(5px);
 }
+
+/* Scroll Hint */
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+.scroll-hint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.4rem 0;
+  animation: bounce 1.4s ease-in-out infinite;
+}

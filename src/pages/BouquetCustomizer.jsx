@@ -161,21 +161,21 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem', flexWrap: 'wrap', width: '100%', maxWidth: '380px', margin: '0 auto 1.5rem auto' }}>
-                    <button className="btn btn-outline" onClick={handleRandomArrange} style={{ flex: '1 1 140px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.5rem', width: '100%', maxWidth: '380px', margin: '0 auto 1.5rem auto' }}>
+                    <button className="btn btn-outline" onClick={handleRandomArrange} style={{ width: '100%' }}>
                         <Shuffle size={16} /> Random Arrangement
                     </button>
 
                     <button
                         className="btn btn-outline"
                         onClick={handleCycleScenery}
-                        style={{ flex: '1 1 140px' }}
+                        style={{ width: '100%' }}
                     >
                         <ImageIcon size={16} /> Change Scenery
                     </button>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', flex: 1, marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', flex: 1, marginBottom: '0.5rem' }}>
                     <div
                         ref={containerRef}
                         style={{
@@ -272,7 +272,14 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+                {/* Scroll Hint */}
+                <div className="scroll-hint">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '600px', margin: '0.5rem auto 0', width: '100%' }}>
                     <button
                         className="btn btn-outline"
                         onClick={() => navigate('/select')}
