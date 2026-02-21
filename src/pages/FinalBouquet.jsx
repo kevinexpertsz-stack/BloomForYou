@@ -95,36 +95,29 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             sn: displaySender, t: theme
         };
 
-        let shareUrl = null;
+        // Build the compact base64 URL (guaranteed fallback)
+        const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+        const longUrl = `${window.location.origin}/final?data=${base64}`;
 
-        // Try GitHub Gist for short URL
+        let shareUrl = longUrl;
+
+        // Try is.gd URL shortener (CORS-friendly, free, no auth needed)
         try {
-            const res = await fetch('https://api.github.com/gists', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    public: true,
-                    files: { 'bouquet.json': { content: JSON.stringify(compact) } }
-                })
-            });
+            const res = await fetch(
+                `https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`,
+                { signal: AbortSignal.timeout(5000) }
+            );
             if (res.ok) {
-                const data = await res.json();
-                if (data.id) {
-                    shareUrl = `${window.location.origin}/final?g=${data.id}`;
+                const short = await res.text();
+                if (short && short.startsWith('https://is.gd/')) {
+                    shareUrl = short.trim();
                 }
             }
-        } catch (e) { /* Gist failed, fallback below */ }
-
-        // Guaranteed fallback: base64 in URL
-        if (!shareUrl) {
-            const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-            shareUrl = `${window.location.origin}/final?data=${base64}`;
-        }
+        } catch (e) { /* is.gd failed, use longUrl */ }
 
         try {
             await navigator.clipboard.writeText(shareUrl);
         } catch (e) {
-            // Last resort: prompt
             window.prompt('Copy this link:', shareUrl);
         }
 
