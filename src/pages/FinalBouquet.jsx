@@ -25,6 +25,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     const queryParams = new URLSearchParams(location.search);
     const gistParam = queryParams.get('g');
     const sharedDataParam = queryParams.get('data'); // legacy fallback
+    const isSharedView = !!(gistParam || sharedDataParam);
 
     let displayArrangement = loadedData ? loadedData.bouquetArrangement : bouquetArrangement;
     let displayScenery = loadedData ? loadedData.scenery : scenery;
@@ -93,6 +94,10 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             r: displayRecipient, sg: displaySignoff,
             sn: displaySender, t: theme
         };
+
+        let shareUrl = null;
+
+        // Try GitHub Gist for short URL
         try {
             const res = await fetch('https://api.github.com/gists', {
                 method: 'POST',
@@ -102,14 +107,27 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                     files: { 'bouquet.json': { content: JSON.stringify(compact) } }
                 })
             });
-            const data = await res.json();
-            const shareUrl = `${window.location.origin}/final?g=${data.id}`;
+            if (res.ok) {
+                const data = await res.json();
+                if (data.id) {
+                    shareUrl = `${window.location.origin}/final?g=${data.id}`;
+                }
+            }
+        } catch (e) { /* Gist failed, fallback below */ }
+
+        // Guaranteed fallback: base64 in URL
+        if (!shareUrl) {
+            const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+            shareUrl = `${window.location.origin}/final?data=${base64}`;
+        }
+
+        try {
             await navigator.clipboard.writeText(shareUrl);
         } catch (e) {
-            // Fallback: use base64 in URL
-            const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-            await navigator.clipboard.writeText(`${window.location.origin}/final?data=${base64}`);
+            // Last resort: prompt
+            window.prompt('Copy this link:', shareUrl);
         }
+
         setSharing(false);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -228,7 +246,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                         </div>
 
                         <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-                            {!sharedDataParam && (
+                            {!isSharedView && (
                                 <button
                                     className="btn btn-outline"
                                     onClick={() => navigate('/message')}
@@ -240,9 +258,10 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                             <button
                                 className={`btn ${copied ? 'btn-outline' : 'btn-primary'}`}
                                 onClick={handleCopyLink}
+                                disabled={sharing}
                                 style={{ flex: 1, padding: '0.75rem', backgroundColor: copied ? '#4caf50' : '', color: copied ? 'white' : '', borderColor: copied ? '#4caf50' : '' }}
                             >
-                                {copied ? <Check size={18} /> : <LinkIcon size={18} />} {copied ? 'Copied!' : 'Copy Link'}
+                                {sharing ? '⏳ Creating link...' : copied ? <><Check size={18} /> Copied!</> : <><LinkIcon size={18} /> Copy Link</>}
                             </button>
                         </div>
 
