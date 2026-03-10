@@ -62,11 +62,11 @@ const Home = ({ theme, setTheme }) => {
             </div>
 
             <footer className="delay-4 animate-fade-in" style={{ textAlign: 'center', color: 'var(--color-text-light)', fontSize: '0.8rem', marginTop: 'auto', fontFamily: 'var(--font-ndot)', letterSpacing: '1px' }}>
-                <p style={{ marginBottom: '0.6rem' }}>
-                    Created using <a href="https://antigravity.google/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Anti_Gravity</a> & <a href="https://vercel.com/new" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Vercel</a>
+                <p style={{ marginBottom: '0.6rem', textTransform: 'uppercase' }}>
+                    Deployed using <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Vercel</a>
                 </p>
-                <div>
-                    <span>Made by <a href="https://www.instagram.com/cubickevin?igsh=MWc3dHlhc3d0ODMzaA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>@cubickevin</a></span>
+                <div style={{ textTransform: 'uppercase' }}>
+                    <span>Made by <a href="https://www.instagram.com/cubickevin?igsh=MWc3dHlhc3d0ODMzaA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>CUBICKIEVN</a></span>
                 </div>
             </footer>
         </div>
