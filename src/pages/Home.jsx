@@ -63,7 +63,7 @@ const Home = ({ theme, setTheme }) => {
 
             <footer className="delay-4 animate-fade-in" style={{ textAlign: 'center', color: 'var(--color-text-light)', fontSize: '0.8rem', marginTop: 'auto', fontFamily: 'var(--font-ndot)', letterSpacing: '1px' }}>
                 <p style={{ marginBottom: '0.6rem', textTransform: 'uppercase' }}>
-                    Deployed using <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Vercel</a>
+                    Deployed on <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Vercel</a>
                 </p>
                 <div style={{ textTransform: 'uppercase' }}>
                     <span>Made by <a href="https://www.instagram.com/cubickevin?igsh=MWc3dHlhc3d0ODMzaA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>CUBICKIEVN</a></span>
