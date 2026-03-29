@@ -46,7 +46,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                                 type="text"
                                 value={recipient}
                                 onChange={e => setRecipient(e.target.value)}
-                                placeholder="[Beloved] ,"
+                                placeholder="Beloved ,"
                                 style={{
                                     border: 'none',
                                     outline: 'none',
@@ -81,7 +81,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                                 type="text"
                                 value={signoff}
                                 onChange={e => setSignoff(e.target.value)}
-                                placeholder="[Always] ,"
+                                placeholder="Always ,"
                                 style={{
                                     border: 'none',
                                     outline: 'none',
@@ -97,7 +97,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                                 type="text"
                                 value={sender}
                                 onChange={e => setSender(e.target.value)}
-                                placeholder="[Secret Admirer]"
+                                placeholder="Secret Admirer"
                                 style={{
                                     border: 'none',
                                     outline: 'none',
