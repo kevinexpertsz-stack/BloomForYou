@@ -95,13 +95,13 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             sn: displaySender, t: theme
         };
 
-        // Build compact base64 URL (guaranteed fallback)
+        // Always build the base64 long URL first — guaranteed to work & never blank
         const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
         const longUrl = `${window.location.origin}/final?data=${base64}`;
 
         let shareUrl = longUrl;
 
-        // Call Vercel serverless proxy → is.gd (server-side, no CORS issues)
+        // Try to shorten via Vercel serverless proxy
         try {
             const res = await fetch('/api/shorten', {
                 method: 'POST',
@@ -110,17 +110,47 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             });
             if (res.ok) {
                 const data = await res.json();
-                // Prefer branded bloomforyou URL (bloomforyou.vercel.app/s/CODE)
-                if (data.branded) shareUrl = data.branded;
-                else if (data.short) shareUrl = data.short;
+                // Only use short URL if it's genuinely non-empty
+                const candidate = data.branded || data.short || '';
+                if (candidate && candidate.startsWith('http')) shareUrl = candidate;
             }
-        } catch (e) { /* proxy failed, use longUrl */ }
+        } catch (_) { /* shortener failed, keep longUrl */ }
 
-        try {
-            await navigator.clipboard.writeText(shareUrl);
-        } catch (e) {
-            window.prompt('Copy this link:', shareUrl);
-        }
+        // iOS-safe clipboard write:
+        // navigator.clipboard.writeText only works on iOS if the site is HTTPS
+        // AND the call is synchronously triggered by a user gesture.
+        // As an extra fallback we use the textarea + execCommand trick.
+        const copyToClipboard = async (text) => {
+            // Try modern API first (works on Android + desktop Chrome/Firefox)
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } catch (_) {}
+            }
+            // iOS Safari fallback: create a temporary textarea, select its content,
+            // and use execCommand('copy') which IS synchronous and works on iOS.
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            // Position off-screen but still in the document
+            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+            document.body.appendChild(ta);
+            // iOS requires saving and restoring any existing selection
+            const selection = window.getSelection();
+            const range = document.createRange();
+            ta.contentEditable = 'true';
+            ta.readOnly = false;
+            range.selectNodeContents(ta);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            ta.setSelectionRange(0, 999999); // For iOS
+            const success = document.execCommand('copy');
+            document.body.removeChild(ta);
+            return success;
+        };
+
+        await copyToClipboard(shareUrl);
 
         setSharing(false);
         setCopied(true);

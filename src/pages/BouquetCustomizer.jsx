@@ -269,12 +269,7 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                     </div>
                 </div>
 
-                {/* Scroll Hint */}
-                <div className="scroll-hint">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </div>
+
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '600px', margin: '0.5rem auto 0', width: '100%' }}>
                     <button

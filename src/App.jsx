@@ -61,7 +61,7 @@ function App() {
 
   return (
     <Router>
-      <div className="app-container" style={{ position: 'relative', minHeight: '100vh' }}>
+      <div className="app-container" style={{ position: 'relative', minHeight: '100dvh' }}>
         {/* Global Background Overlay */}
         <div style={{
           position: 'fixed',
@@ -72,11 +72,11 @@ function App() {
           backgroundImage: 'url("/Background 1.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          opacity: 0.15, // Low opacity for transparent effect
-          pointerEvents: 'none', // Ensure it doesn't block interactions
-          zIndex: 0 // Place it behind everything else in the main container
+          opacity: 0.15,
+          pointerEvents: 'none',
+          zIndex: 0
         }} />
-        <main className="main-content" style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <main className="main-content" style={{ position: 'relative', zIndex: 1, minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
           <GlobalHeader theme={theme} setTheme={setTheme} />
           <Routes>
             <Route path="/" element={<Home theme={theme} setTheme={setTheme} />} />
