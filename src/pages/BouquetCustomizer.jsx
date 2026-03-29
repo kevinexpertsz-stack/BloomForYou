@@ -5,13 +5,19 @@ import '../index.css';
 import ThemeToggle from '../components/ThemeToggle';
 
 const sceneries = [
-    { id: 'bg2', name: 'Scene 02', bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
-    { id: 'bg3', name: 'Scene 03', bg: '#f2e8e9', bgImage: '/background/Scene 03.jpg' },
-    { id: 'bg5', name: 'Scene 05', bg: '#f7ecec', bgImage: '/background/Scene 05.jpg' },
-    { id: 'bg6', name: 'Scene 06', bg: '#eceef7', bgImage: '/background/Scene 06.jpg' },
-    { id: 'bg7', name: 'Scene 07', bg: '#f5f0e6', bgImage: '/background/Scene 07.jpg' },
-    { id: 'bg8', name: 'Scene 08', bg: '#edece6', bgImage: '/background/Scene 08.jpg' },
-    { id: 'bg9', name: 'Scene 09', bg: '#f9f6f2', bgImage: '/background/Scene 09.jpg' }
+    { id: 'bg2',  name: 'Scene 02', bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
+    { id: 'bg3',  name: 'Scene 03', bg: '#f2e8e9', bgImage: '/background/Scene 03.jpg' },
+    { id: 'bg5',  name: 'Scene 05', bg: '#f7ecec', bgImage: '/background/Scene 05.jpg' },
+    { id: 'bg6',  name: 'Scene 06', bg: '#eceef7', bgImage: '/background/Scene 06.jpg' },
+    { id: 'bg7',  name: 'Scene 07', bg: '#f5f0e6', bgImage: '/background/Scene 07.jpg' },
+    { id: 'bg8',  name: 'Scene 08', bg: '#edece6', bgImage: '/background/Scene 08.jpg' },
+    { id: 'bg9',  name: 'Scene 09', bg: '#f9f6f2', bgImage: '/background/Scene 09.jpg' },
+    { id: 'bg10', name: 'Scene 10', bg: '#f5f5f0', bgImage: '/background/Scene 10.jpg' },
+    { id: 'bg11', name: 'Scene 11', bg: '#f0f5f5', bgImage: '/background/Scene 11.jpg' },
+    { id: 'bg12', name: 'Scene 12', bg: '#f5f0f5', bgImage: '/background/Scene 12.jpg' },
+    { id: 'bg13', name: 'Scene 13', bg: '#f5f5ec', bgImage: '/background/Scene 13.jpg' },
+    { id: 'bg14', name: 'Scene 14', bg: '#ecf0f5', bgImage: '/background/Scene 14.jpg' },
+    { id: 'bg15', name: 'Scene 15', bg: '#f5ecec', bgImage: '/background/Scene 15.jpg' },
 ];
 
 const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArrangement, scenery, setScenery, theme, setTheme }) => {

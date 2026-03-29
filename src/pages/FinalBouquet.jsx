@@ -5,13 +5,19 @@ import '../index.css';
 import ThemeToggle from '../components/ThemeToggle';
 
 const sceneries = {
-    'bg2': { bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
-    'bg3': { bg: '#f2e8e9', bgImage: '/background/Scene 03.jpg' },
-    'bg5': { bg: '#f7ecec', bgImage: '/background/Scene 05.jpg' },
-    'bg6': { bg: '#eceef7', bgImage: '/background/Scene 06.jpg' },
-    'bg7': { bg: '#f5f0e6', bgImage: '/background/Scene 07.jpg' },
-    'bg8': { bg: '#edece6', bgImage: '/background/Scene 08.jpg' },
-    'bg9': { bg: '#f9f6f2', bgImage: '/background/Scene 09.jpg' }
+    'bg2':  { bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
+    'bg3':  { bg: '#f2e8e9', bgImage: '/background/Scene 03.jpg' },
+    'bg5':  { bg: '#f7ecec', bgImage: '/background/Scene 05.jpg' },
+    'bg6':  { bg: '#eceef7', bgImage: '/background/Scene 06.jpg' },
+    'bg7':  { bg: '#f5f0e6', bgImage: '/background/Scene 07.jpg' },
+    'bg8':  { bg: '#edece6', bgImage: '/background/Scene 08.jpg' },
+    'bg9':  { bg: '#f9f6f2', bgImage: '/background/Scene 09.jpg' },
+    'bg10': { bg: '#f5f5f0', bgImage: '/background/Scene 10.jpg' },
+    'bg11': { bg: '#f0f5f5', bgImage: '/background/Scene 11.jpg' },
+    'bg12': { bg: '#f5f0f5', bgImage: '/background/Scene 12.jpg' },
+    'bg13': { bg: '#f5f5ec', bgImage: '/background/Scene 13.jpg' },
+    'bg14': { bg: '#ecf0f5', bgImage: '/background/Scene 14.jpg' },
+    'bg15': { bg: '#f5ecec', bgImage: '/background/Scene 15.jpg' },
 };
 
 const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff, sender, onReset, theme, setTheme }) => {
