@@ -256,7 +256,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                         }}>
                             <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-primary)' }}>
                                 <span style={{ marginRight: '0.4rem' }}>Dear</span>
-                                <span>{displayRecipient || <span style={{ opacity: 0.6 }}>[Beloved] ,</span>}</span>
+                                <span>{displayRecipient || <span style={{ opacity: 0.6 }}>Beloved ,</span>}</span>
                             </div>
 
                             <div style={{
@@ -271,8 +271,8 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-primary)' }}>
-                                <p style={{ margin: 0 }}>{displaySignoff || <span style={{ opacity: 0.6 }}>[Always] ,</span>}</p>
-                                <p style={{ margin: 0 }}>{displaySender || <span style={{ opacity: 0.6 }}>[Secret Admirer]</span>}</p>
+                                <p style={{ margin: 0 }}>{displaySignoff || <span style={{ opacity: 0.6 }}>Always ,</span>}</p>
+                                <p style={{ margin: 0 }}>{displaySender || <span style={{ opacity: 0.6 }}>Secret Admirer</span>}</p>
                             </div>
                         </div>
 
