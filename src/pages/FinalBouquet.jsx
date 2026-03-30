@@ -65,14 +65,17 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             .catch(e => console.error('Failed to load shared bouquet', e));
     }, [gistParam]);
 
-    // Load from JSONBlob if /bouquet/:blobId route
+    // Load from dpaste.com if /bouquet/:blobId route
     useEffect(() => {
         if (!blobId) return;
-        fetch(`https://jsonblob.com/api/jsonBlob/${blobId}`, {
-            headers: { 'Accept': 'application/json' }
-        })
-            .then(r => r.json())
-            .then(raw => {
+        // dpaste raw content URL: https://dpaste.com/ID.txt
+        fetch(`https://dpaste.com/${blobId}.txt`)
+            .then(r => {
+                if (!r.ok) throw new Error(`dpaste fetch failed: ${r.status}`);
+                return r.text();
+            })
+            .then(text => {
+                const raw = JSON.parse(text.trim());
                 const expanded = {
                     bouquetArrangement: (raw.b || []).map(bloom => ({
                         uniqueId: bloom.u, flowerId: bloom.f,
@@ -87,7 +90,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                 setLoadedData(expanded);
                 if (raw.t && setTheme) setTheme(raw.t);
             })
-            .catch(e => console.error('Failed to load bouquet from blob', e));
+            .catch(e => console.error('Failed to load bouquet:', e));
     }, [blobId]);
 
     // Legacy fallback: load from ?data= base64 param
