@@ -101,9 +101,10 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             sn: displaySender, t: theme
         };
 
-        // Always build the base64 long URL first — guaranteed to work & never blank
+        // encodeURIComponent the base64 — base64 contains +, /, = which break URLs.
+        // Without this, + becomes space, is.gd mangles it, atob() fails → blank page.
         const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-        const longUrl = `${window.location.origin}/final?data=${base64}`;
+        const longUrl = `${window.location.origin}/final?data=${encodeURIComponent(base64)}`;
 
         let shareUrl = longUrl;
 
