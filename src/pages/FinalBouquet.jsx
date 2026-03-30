@@ -65,20 +65,20 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             .catch(e => console.error('Failed to load shared bouquet', e));
     }, [gistParam]);
 
-    // Load from dpaste.com if /bouquet/:blobId route
+    // Load from pastefy.app if /blooms/:blobId route
     useEffect(() => {
         if (!blobId) return;
-        // dpaste raw content URL: https://dpaste.com/ID.txt
-        fetch(`https://dpaste.com/${blobId}.txt`)
+        fetch(`https://pastefy.app/api/v2/paste/${blobId}`)
             .then(r => {
-                if (!r.ok) throw new Error(`dpaste fetch failed: ${r.status}`);
-                return r.text();
+                if (!r.ok) throw new Error(`pastefy fetch failed: ${r.status}`);
+                return r.json();
             })
-            .then(text => {
-                const raw = JSON.parse(text.trim());
+            .then(json => {
+                const raw = JSON.parse(json?.paste?.content || '{}');
                 const expanded = {
-                    bouquetArrangement: (raw.b || []).map(bloom => ({
-                        uniqueId: bloom.u, flowerId: bloom.f,
+                    bouquetArrangement: (raw.b || []).map((bloom, i) => ({
+                        uniqueId: bloom.u || `${bloom.f}-${i}`,  // regenerate if missing
+                        flowerId: bloom.f,
                         x: bloom.x, y: bloom.y, z: bloom.z
                     })),
                     scenery: raw.s || 'bg3',
@@ -120,9 +120,10 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
 
     const handleCopyLink = async () => {
         setSharing(true);
+        // Compact format: omit uniqueId (timestamp-based, very long) — regenerated on load
         const compact = {
             b: displayArrangement.map(bloom => ({
-                u: bloom.uniqueId, f: bloom.flowerId,
+                f: bloom.flowerId,   // no 'u' field — saves ~22 chars per flower!
                 x: Math.round(bloom.x), y: Math.round(bloom.y), z: Math.round(bloom.z)
             })),
             s: displayScenery, m: displayMessage,
@@ -136,7 +137,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
 
         let shareUrl = longUrl;
 
-        // Try to store in JSONBlob → get clean bloomforyou.vercel.app/bouquet/UUID
+        // Try to store in pastefy → get clean bloomforyou.vercel.app/blooms/XXXXX
         try {
             const res = await fetch('/api/shorten', {
                 method: 'POST',
