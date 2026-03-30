@@ -7,7 +7,16 @@ import ThemeToggle from '../components/ThemeToggle';
 const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, setSignoff, sender, setSender, theme, setTheme }) => {
     const navigate = useNavigate();
     const [showMithilaPopup, setShowMithilaPopup] = useState(false);
+    const [closingPopup, setClosingPopup] = useState(false);
     const hasShownPopup = useRef(false);
+
+    const handleCloseMithila = () => {
+        setClosingPopup(true);
+        setTimeout(() => {
+            setShowMithilaPopup(false);
+            setClosingPopup(false);
+        }, 600);
+    };
 
     useEffect(() => {
         if (/mithila/i.test(sender) && !hasShownPopup.current) {
@@ -43,7 +52,9 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                         maxWidth: '320px',
                         width: '100%',
                         textAlign: 'center',
-                        animation: 'popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        animation: closingPopup
+                            ? 'heartBurst 0.6s ease forwards'
+                            : 'popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
                         position: 'relative',
                         overflow: 'hidden',
                     }}>
@@ -76,9 +87,8 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                             Hey there my<br />cutie pie 🩷
                         </p>
 
-                        {/* Close button */}
                         <button
-                            onClick={() => setShowMithilaPopup(false)}
+                            onClick={handleCloseMithila}
                             style={{
                                 background: 'linear-gradient(135deg, #e8a0c8, #cdb4db)',
                                 border: 'none',
@@ -87,22 +97,28 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                                 color: 'white',
                                 fontFamily: 'var(--font-main)',
                                 fontWeight: 600,
-                                fontSize: '0.95rem',
-                                letterSpacing: '0.5px',
+                                fontSize: '1.6rem',
                                 cursor: 'pointer',
                                 boxShadow: '0 4px 16px rgba(205,180,219,0.5)',
                                 transition: 'transform 0.2s',
+                                lineHeight: 1,
                             }}
-                            onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
-                            onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.12)'}
+                            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                         >
-                            Yes I am 💕
+                            🥰❤️
                         </button>
                     </div>
                     <style>{`
                         @keyframes popIn {
                             from { opacity: 0; transform: scale(0.7); }
                             to   { opacity: 1; transform: scale(1); }
+                        }
+                        @keyframes heartBurst {
+                            0%   { transform: scale(1);    opacity: 1; }
+                            30%  { transform: scale(1.18); opacity: 1; }
+                            60%  { transform: scale(0.92); opacity: 0.7; }
+                            100% { transform: scale(1.4);  opacity: 0; }
                         }
                         @keyframes floatHeart {
                             0%   { transform: translateY(0) scale(1);   opacity: 0.5; }
