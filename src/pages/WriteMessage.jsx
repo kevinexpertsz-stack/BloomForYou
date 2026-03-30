@@ -84,7 +84,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                             lineHeight: 1.3,
                             margin: '0 0 1.5rem',
                         }}>
-                            Hey there my<br />cutie pie 🩷
+                            Hey there<br />cutie pie 🩷
                         </p>
 
                         <button
