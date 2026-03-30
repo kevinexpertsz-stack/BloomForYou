@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/bouquet/:id",
+            "destination": "/index.html"
+        },
+        {
             "source": "/s/:code",
             "destination": "/api/s?id=:code"
         },

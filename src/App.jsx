@@ -9,7 +9,7 @@ import './index.css'
 
 const GlobalHeader = ({ theme, setTheme }) => {
   const location = useLocation();
-  if (location.pathname === '/') return null; // Hide on Home page
+  if (location.pathname === '/' || location.pathname.startsWith('/bouquet/')) return null;
 
   return (
     <header style={{
@@ -124,6 +124,22 @@ function App() {
             />
             <Route
               path="/final"
+              element={
+                <FinalBouquet
+                  bouquetArrangement={bouquetArrangement}
+                  scenery={scenery}
+                  message={message}
+                  recipient={recipient}
+                  signoff={signoff}
+                  sender={sender}
+                  onReset={handleReset}
+                  theme={theme}
+                  setTheme={setTheme}
+                />
+              }
+            />
+            <Route
+              path="/bouquet/:blobId"
               element={
                 <FinalBouquet
                   bouquetArrangement={bouquetArrangement}

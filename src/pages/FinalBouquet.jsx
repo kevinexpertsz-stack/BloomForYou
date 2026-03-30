@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, Link as LinkIcon, Check } from 'lucide-react';
 import '../index.css';
 import ThemeToggle from '../components/ThemeToggle';
@@ -31,7 +31,8 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     const queryParams = new URLSearchParams(location.search);
     const gistParam = queryParams.get('g');
     const sharedDataParam = queryParams.get('data'); // legacy fallback
-    const isSharedView = !!(gistParam || sharedDataParam);
+    const { blobId } = useParams(); // /bouquet/:blobId
+    const isSharedView = !!(gistParam || sharedDataParam || blobId);
 
     let displayArrangement = loadedData ? loadedData.bouquetArrangement : bouquetArrangement;
     let displayScenery = loadedData ? loadedData.scenery : scenery;
@@ -63,6 +64,31 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             })
             .catch(e => console.error('Failed to load shared bouquet', e));
     }, [gistParam]);
+
+    // Load from JSONBlob if /bouquet/:blobId route
+    useEffect(() => {
+        if (!blobId) return;
+        fetch(`https://jsonblob.com/api/jsonBlob/${blobId}`, {
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(r => r.json())
+            .then(raw => {
+                const expanded = {
+                    bouquetArrangement: (raw.b || []).map(bloom => ({
+                        uniqueId: bloom.u, flowerId: bloom.f,
+                        x: bloom.x, y: bloom.y, z: bloom.z
+                    })),
+                    scenery: raw.s || 'bg3',
+                    message: raw.m || '',
+                    recipient: raw.r || '',
+                    signoff: raw.sg || '',
+                    sender: raw.sn || ''
+                };
+                setLoadedData(expanded);
+                if (raw.t && setTheme) setTheme(raw.t);
+            })
+            .catch(e => console.error('Failed to load bouquet from blob', e));
+    }, [blobId]);
 
     // Legacy fallback: load from ?data= base64 param
     useEffect(() => {
@@ -101,27 +127,24 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             sn: displaySender, t: theme
         };
 
-        // encodeURIComponent the base64 — base64 contains +, /, = which break URLs.
-        // Without this, + becomes space, is.gd mangles it, atob() fails → blank page.
+        // Build fallback long URL (base64 encoded, URL-safe)
         const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
         const longUrl = `${window.location.origin}/final?data=${encodeURIComponent(base64)}`;
 
         let shareUrl = longUrl;
 
-        // Try to shorten via Vercel serverless proxy
+        // Try to store in JSONBlob → get clean bloomforyou.vercel.app/bouquet/UUID
         try {
             const res = await fetch('/api/shorten', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: longUrl })
+                body: JSON.stringify({ data: compact })
             });
             if (res.ok) {
-                const data = await res.json();
-                // Only use short URL if it's genuinely non-empty
-                const candidate = data.branded || data.short || '';
-                if (candidate && candidate.startsWith('http')) shareUrl = candidate;
+                const json = await res.json();
+                if (json.branded && json.branded.startsWith('http')) shareUrl = json.branded;
             }
-        } catch (_) { /* shortener failed, keep longUrl */ }
+        } catch (_) { /* storage failed, keep longUrl */ }
 
         // iOS-safe clipboard write:
         // navigator.clipboard.writeText only works on iOS if the site is HTTPS

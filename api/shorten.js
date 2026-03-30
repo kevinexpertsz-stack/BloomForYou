@@ -1,6 +1,6 @@
-// Vercel serverless function: proxies URL shortening via is.gd
-// The base64 ?data= param is now properly encodeURIComponent'd by the client
-// so is.gd correctly stores and redirects the full URL without mangling it.
+// Vercel serverless function: POST /api/shorten
+// Stores bouquet JSON in JSONBlob (free, no auth, returns UUIDs)
+// Returns a clean branded URL: bloomforyou.vercel.app/bouquet/UUID
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -9,27 +9,32 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { url } = req.body || {};
-    if (!url) return res.status(400).json({ error: 'URL is required' });
+    const { data } = req.body || {};
+    if (!data) return res.status(400).json({ error: 'data is required' });
 
     try {
-        const response = await fetch(
-            `https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`
-        );
-        const short = await response.text();
+        // Store the compact bouquet JSON in JSONBlob
+        const response = await fetch('https://jsonblob.com/api/jsonBlob', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(data),
+        });
 
-        if (short && short.startsWith('https://is.gd/')) {
-            const code = short.trim().replace('https://is.gd/', '');
-            const host = req.headers.host || 'bloomforyou.vercel.app';
-            // Use the is.gd URL directly (not a /s/ redirect) to avoid double-hop
-            const branded = `https://is.gd/${code}`;
-            return res.status(200).json({ short: short.trim(), branded, code });
-        }
+        if (!response.ok) throw new Error(`JSONBlob error: ${response.status}`);
 
-        // is.gd failed or rate-limited — return the long URL as fallback
-        return res.status(200).json({ short: url, branded: url });
+        // JSONBlob returns the ID in the Location header:
+        // e.g. https://jsonblob.com/api/jsonBlob/353317f1-5b05-41d4-a9f9-8ad6fef2e74c
+        const location = response.headers.get('location') || '';
+        const blobId = location.split('/').pop();
+
+        if (!blobId) throw new Error('No blob ID returned');
+
+        const host = req.headers.host || 'bloomforyou.vercel.app';
+        const branded = `https://${host}/bouquet/${blobId}`;
+        return res.status(200).json({ branded, blobId });
+
     } catch (e) {
-        // Network error — return the long URL as fallback
-        return res.status(200).json({ short: url, branded: url });
+        // JSONBlob failed — signal client to fall back to long ?data= URL
+        return res.status(500).json({ error: e.message });
     }
 }
