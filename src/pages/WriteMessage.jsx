@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Flower } from 'lucide-react';
 import '../index.css';
@@ -5,6 +6,15 @@ import ThemeToggle from '../components/ThemeToggle';
 
 const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, setSignoff, sender, setSender, theme, setTheme }) => {
     const navigate = useNavigate();
+    const [showMithilaPopup, setShowMithilaPopup] = useState(false);
+    const hasShownPopup = useRef(false);
+
+    useEffect(() => {
+        if (/mithila/i.test(sender) && !hasShownPopup.current) {
+            hasShownPopup.current = true;
+            setShowMithilaPopup(true);
+        }
+    }, [sender]);
 
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -14,6 +24,94 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
             <div style={{ position: 'absolute', top: '20%', right: '10%', opacity: 0.2 }}><Flower size={32} color="var(--color-accent)" /></div>
             <div style={{ position: 'absolute', bottom: '30%', left: '15%', opacity: 0.2 }}><Flower size={64} color="var(--color-secondary)" /></div>
             <div style={{ position: 'absolute', bottom: '10%', right: '5%', opacity: 0.2 }}><Flower size={40} color="var(--color-primary)" /></div>
+
+            {/* 🌸 Secret Easter Egg Popup */}
+            {showMithilaPopup && (
+                <div style={{
+                    position: 'fixed', inset: 0,
+                    backgroundColor: 'rgba(0,0,0,0.35)',
+                    backdropFilter: 'blur(4px)',
+                    zIndex: 9999,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '1rem',
+                }}>
+                    <div style={{
+                        background: 'linear-gradient(135deg, #fff0f6 0%, #fce4f5 50%, #f3e8ff 100%)',
+                        borderRadius: '28px',
+                        boxShadow: '0 20px 60px rgba(205,180,219,0.5)',
+                        padding: '2.5rem 2rem',
+                        maxWidth: '320px',
+                        width: '100%',
+                        textAlign: 'center',
+                        animation: 'popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        position: 'relative',
+                        overflow: 'hidden',
+                    }}>
+                        {/* Floating hearts background */}
+                        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+                            {['10%', '30%', '55%', '75%', '90%'].map((left, i) => (
+                                <span key={i} style={{
+                                    position: 'absolute',
+                                    bottom: '-10px',
+                                    left,
+                                    fontSize: `${1 + i * 0.3}rem`,
+                                    animation: `floatHeart ${2 + i * 0.5}s ease-in-out infinite`,
+                                    animationDelay: `${i * 0.4}s`,
+                                    opacity: 0.5,
+                                }}>🩷</span>
+                            ))}
+                        </div>
+
+                        {/* Big heart */}
+                        <div style={{ fontSize: '3.5rem', marginBottom: '0.5rem', lineHeight: 1 }}>🩷</div>
+
+                        {/* Message */}
+                        <p style={{
+                            fontFamily: 'var(--font-caveat)',
+                            fontSize: '2rem',
+                            color: '#b05080',
+                            lineHeight: 1.3,
+                            margin: '0 0 1.5rem',
+                        }}>
+                            Hey there my<br />cutie pie 🩷
+                        </p>
+
+                        {/* Close button */}
+                        <button
+                            onClick={() => setShowMithilaPopup(false)}
+                            style={{
+                                background: 'linear-gradient(135deg, #e8a0c8, #cdb4db)',
+                                border: 'none',
+                                borderRadius: '50px',
+                                padding: '0.75rem 2rem',
+                                color: 'white',
+                                fontFamily: 'var(--font-main)',
+                                fontWeight: 600,
+                                fontSize: '0.95rem',
+                                letterSpacing: '0.5px',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 16px rgba(205,180,219,0.5)',
+                                transition: 'transform 0.2s',
+                            }}
+                            onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
+                            onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                        >
+                            Yes I am 💕
+                        </button>
+                    </div>
+                    <style>{`
+                        @keyframes popIn {
+                            from { opacity: 0; transform: scale(0.7); }
+                            to   { opacity: 1; transform: scale(1); }
+                        }
+                        @keyframes floatHeart {
+                            0%   { transform: translateY(0) scale(1);   opacity: 0.5; }
+                            50%  { transform: translateY(-60px) scale(1.2); opacity: 0.8; }
+                            100% { transform: translateY(-120px) scale(1); opacity: 0; }
+                        }
+                    `}</style>
+                </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', zIndex: 1, transform: 'scale(0.99)', transformOrigin: 'top center' }}>
                 <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '2rem', zIndex: 1 }}>
