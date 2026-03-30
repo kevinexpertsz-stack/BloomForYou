@@ -9,7 +9,7 @@ import './index.css'
 
 const GlobalHeader = ({ theme, setTheme }) => {
   const location = useLocation();
-  if (location.pathname === '/' || location.pathname.startsWith('/blooms/')) return null;
+  if (location.pathname === '/' || location.pathname.startsWith('/s/')) return null;
 
   return (
     <header style={{
@@ -139,7 +139,7 @@ function App() {
               }
             />
             <Route
-              path="/blooms/:blobId"
+              path="/s/:id"
               element={
                 <FinalBouquet
                   bouquetArrangement={bouquetArrangement}

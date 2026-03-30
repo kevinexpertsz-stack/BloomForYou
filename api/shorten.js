@@ -1,6 +1,5 @@
 // Vercel serverless function: POST /api/shorten
-// Stores bouquet JSON in pastefy.app (free, no auth, short IDs ~5-8 chars)
-// Returns: bloomforyou.vercel.app/blooms/XXXXX  (~40 chars total)
+// Proxies URL shortening via is.gd
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -9,33 +8,24 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { data } = req.body || {};
-    if (!data) return res.status(400).json({ error: 'data is required' });
+    const { url } = req.body || {};
+    if (!url) return res.status(400).json({ error: 'URL is required' });
 
     try {
-        const response = await fetch('https://pastefy.app/api/v2/paste', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                content: JSON.stringify(data),
-                type: 'text',
-                title: 'bloomforyou_bouquet',
-                expiry: null,  // never expires
-            }),
-        });
+        const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`);
+        const text = await response.text();
 
-        if (!response.ok) throw new Error(`pastefy error: ${response.status}`);
+        if (text && text.startsWith('https://is.gd/')) {
+            const code = text.trim().replace('https://is.gd/', '');
+            const host = req.headers.host || 'bloomforyou.vercel.app';
+            // Branded short URL: bloomforyou.vercel.app/s/CODE
+            const branded = `https://${host}/s/${code}`;
+            return res.status(200).json({ branded, short: text, code });
+        }
 
-        const json = await response.json();
-        const pasteId = json?.paste?.id;
-
-        if (!pasteId) throw new Error('No paste ID in response');
-
-        const host = req.headers.host || 'bloomforyou.vercel.app';
-        const branded = `https://${host}/blooms/${pasteId}`;
-        return res.status(200).json({ branded, pasteId });
-
+        // If is.gd fails, return the long URL as fallback
+        return res.status(200).json({ branded: url, short: url });
     } catch (e) {
-        return res.status(500).json({ error: e.message });
+        return res.status(200).json({ branded: url, short: url });
     }
 }

@@ -31,8 +31,8 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     const queryParams = new URLSearchParams(location.search);
     const gistParam = queryParams.get('g');
     const sharedDataParam = queryParams.get('data'); // legacy fallback
-    const { blobId } = useParams(); // /bouquet/:blobId
-    const isSharedView = !!(gistParam || sharedDataParam || blobId);
+    const { id } = useParams(); // /s/:id
+    const isSharedView = !!(gistParam || sharedDataParam || id);
 
     let displayArrangement = loadedData ? loadedData.bouquetArrangement : bouquetArrangement;
     let displayScenery = loadedData ? loadedData.scenery : scenery;
@@ -65,43 +65,19 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             .catch(e => console.error('Failed to load shared bouquet', e));
     }, [gistParam]);
 
-    // Load from pastefy.app if /blooms/:blobId route
-    useEffect(() => {
-        if (!blobId) return;
-        fetch(`https://pastefy.app/api/v2/paste/${blobId}`)
-            .then(r => {
-                if (!r.ok) throw new Error(`pastefy fetch failed: ${r.status}`);
-                return r.json();
-            })
-            .then(json => {
-                const raw = JSON.parse(json?.paste?.content || '{}');
-                const expanded = {
-                    bouquetArrangement: (raw.b || []).map((bloom, i) => ({
-                        uniqueId: bloom.u || `${bloom.f}-${i}`,  // regenerate if missing
-                        flowerId: bloom.f,
-                        x: bloom.x, y: bloom.y, z: bloom.z
-                    })),
-                    scenery: raw.s || 'bg3',
-                    message: raw.m || '',
-                    recipient: raw.r || '',
-                    signoff: raw.sg || '',
-                    sender: raw.sn || ''
-                };
-                setLoadedData(expanded);
-                if (raw.t && setTheme) setTheme(raw.t);
-            })
-            .catch(e => console.error('Failed to load bouquet:', e));
-    }, [blobId]);
-
     // Legacy fallback: load from ?data= base64 param
     useEffect(() => {
         if (!sharedDataParam || gistParam) return;
         try {
-            const raw = JSON.parse(decodeURIComponent(escape(atob(sharedDataParam))));
+            // Robust Fix for "blank link" bug: URL-unfriendly chars (+, /, =) can get converted to spaces
+            // We replace them back before decoding to ensure atob() never fails.
+            const normalizedBase64 = sharedDataParam.replace(/ /g, '+');
+            const raw = JSON.parse(decodeURIComponent(escape(atob(normalizedBase64))));
+            
             const expanded = {
-                bouquetArrangement: (raw.b || raw.bouquetArrangement || []).map(bloom => ({
-                    uniqueId: bloom.u || bloom.uniqueId,
-                    flowerId: bloom.f || bloom.flowerId,
+                bouquetArrangement: (raw.b || raw.bouquetArrangement || []).map((bloom, i) => ({
+                    uniqueId: bloom.u || bloom.uniqueId || `${bloom.f || 'rose'}-${i}`,
+                    flowerId: bloom.f || bloom.flowerId || '1-Rose',
                     x: bloom.x, y: bloom.y, z: bloom.z
                 })),
                 scenery: raw.s || raw.scenery || 'bg3',
@@ -114,16 +90,16 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             const t = raw.t || raw.theme;
             if (t && setTheme) setTheme(t);
         } catch (e) { console.error('Failed to parse shared data', e); }
-    }, [sharedDataParam]);
+    }, [sharedDataParam, gistParam]);
 
     const selectedScenery = sceneries[displayScenery] || sceneries['bg3'];
 
     const handleCopyLink = async () => {
         setSharing(true);
-        // Compact format: omit uniqueId (timestamp-based, very long) — regenerated on load
+        // Build compact JSON for sharing
         const compact = {
             b: displayArrangement.map(bloom => ({
-                f: bloom.flowerId,   // no 'u' field — saves ~22 chars per flower!
+                f: bloom.flowerId,
                 x: Math.round(bloom.x), y: Math.round(bloom.y), z: Math.round(bloom.z)
             })),
             s: displayScenery, m: displayMessage,
@@ -131,24 +107,25 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             sn: displaySender, t: theme
         };
 
-        // Build fallback long URL (base64 encoded, URL-safe)
+        // encodeURIComponent the base64 — base64 contains +, /, = which break URLs.
+        // We MUST use encodeURIComponent to ensure it remains valid when shortened.
         const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
         const longUrl = `${window.location.origin}/final?data=${encodeURIComponent(base64)}`;
 
         let shareUrl = longUrl;
 
-        // Try to store in pastefy → get clean bloomforyou.vercel.app/blooms/XXXXX
+        // Try to shorten via Vercel serverless proxy (is.gd)
         try {
             const res = await fetch('/api/shorten', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: compact })
+                body: JSON.stringify({ url: longUrl })
             });
             if (res.ok) {
                 const json = await res.json();
                 if (json.branded && json.branded.startsWith('http')) shareUrl = json.branded;
             }
-        } catch (_) { /* storage failed, keep longUrl */ }
+        } catch (_) { /* shortener failed, keep longUrl */ }
 
         // iOS-safe clipboard write:
         // navigator.clipboard.writeText only works on iOS if the site is HTTPS

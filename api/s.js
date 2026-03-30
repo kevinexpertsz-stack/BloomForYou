@@ -1,28 +1,15 @@
-// Vercel serverless function: /s/:code
-// Looks up the stored data param and redirects to /final?data=CODE
-
-const store = new Map();
-
-// NOTE: This store Map is shared with shorten.js only when both run in the
-// same Vercel function instance. For cross-instance persistence use Vercel KV.
-// As a reliable fallback, the client always copies the full ?data= URL too.
-
+// Vercel serverless function: /api/s
+// Redirects bloomforyou.vercel.app/s/CODE → is.gd/CODE → final bouquet page
 export default function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
+    // Extract code from query: /api/s?id=lwbutq
     const { id } = req.query;
 
     if (!id) {
-        return res.redirect(302, '/');
+        return res.status(400).send('Missing short code');
     }
 
-    // Try in-memory store first
-    const dataParam = store.get(id);
-    if (dataParam) {
-        return res.redirect(302, `/final?data=${dataParam}`);
-    }
-
-    // Fallback: the code IS the data param itself (for direct long-URL fallback)
-    // This handles the case where shortening was skipped and the full URL was copied
-    return res.redirect(302, `/final?data=${id}`);
+    // Redirect to the is.gd short URL which will then redirect to the bouquet
+    res.redirect(302, `https://is.gd/${id}`);
 }
