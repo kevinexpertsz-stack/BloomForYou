@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Link as LinkIcon, Check } from 'lucide-react';
 import '../index.css';
 import ThemeToggle from '../components/ThemeToggle';
@@ -30,9 +30,8 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     // Parse URL parameters
     const queryParams = new URLSearchParams(location.search);
     const gistParam = queryParams.get('g');
-    const sharedDataParam = queryParams.get('data'); // legacy fallback
-    const { id } = useParams(); // /s/:id
-    const isSharedView = !!(gistParam || sharedDataParam || id);
+    const sharedDataParam = queryParams.get('data'); // /final?data=BASE64
+    const isSharedView = !!(gistParam || sharedDataParam);
 
     let displayArrangement = loadedData ? loadedData.bouquetArrangement : bouquetArrangement;
     let displayScenery = loadedData ? loadedData.scenery : scenery;
@@ -184,10 +183,12 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                     {/* Bouquet Display (Read-Only) */}
                     <div style={{
                         width: '100%',
-                        maxWidth: '400px',
-                        height: '500px',
+                        maxWidth: '430px',
+                        aspectRatio: '4 / 5',
+                        maxHeight: '70vh', /* Prevents overflowing height on short phones */
                         overflow: 'hidden',
                         position: 'relative',
+                        margin: '0 auto',
                     }}>
                         {/* Masked Scenery Layer */}
                         <div style={{
@@ -225,19 +226,19 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                 key={bloom.uniqueId}
                                 style={{
                                     position: 'absolute',
-                                    left: `${bloom.x}px`,
-                                    top: `${bloom.y}px`,
+                                    left: `${(bloom.x / 400) * 100}%`,
+                                    top: `${(bloom.y / 500) * 100}%`,
                                     zIndex: bloom.z,
-                                    width: '180px',
-                                    height: '180px',
+                                    width: `${(180 / 400) * 100}%`,
+                                    height: `${(180 / 500) * 100}%`,
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}
                             >
                                 <div style={{
-                                    width: '180px',
-                                    height: '180px',
+                                    width: '100%',
+                                    height: '100%',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',

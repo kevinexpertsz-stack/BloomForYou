@@ -224,11 +224,13 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                         ref={containerRef}
                         style={{
                             width: '100%',
-                            maxWidth: '400px',
-                            height: '500px',
+                            maxWidth: '430px',
+                            aspectRatio: '4 / 5',
+                            maxHeight: '65vh',
                             overflow: 'hidden',
                             position: 'relative',
-                            touchAction: 'none'
+                            touchAction: 'none',
+                            margin: '0 auto'
                         }}
                     >
                         {/* Masked Scenery Layer */}
@@ -268,11 +270,11 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                                 key={bloom.uniqueId}
                                 style={{
                                     position: 'absolute',
-                                    left: `${bloom.x}px`,
-                                    top: `${bloom.y}px`,
+                                    left: `${(bloom.x / 400) * 100}%`,
+                                    top: `${(bloom.y / 500) * 100}%`,
                                     zIndex: bloom.z,
-                                    width: '180px',
-                                    height: '180px',
+                                    width: `${(180 / 400) * 100}%`,
+                                    height: `${(180 / 500) * 100}%`,
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -290,10 +292,10 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                                     onPointerCancel={handlePointerUp}
                                     style={{
                                         position: 'absolute',
-                                        top: '40px',
-                                        left: '40px',
-                                        width: '100px',
-                                        height: '100px',
+                                        top: '22.2%',
+                                        left: '22.2%',
+                                        width: '55.6%',
+                                        height: '55.6%',
                                         borderRadius: '50%',
                                         pointerEvents: 'auto',
                                         cursor: draggingId === bloom.uniqueId ? 'grabbing' : 'grab',
@@ -302,8 +304,8 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                                     }}
                                 ></div>
                                 <div style={{
-                                    width: '180px',
-                                    height: '180px',
+                                    width: '100%',
+                                    height: '100%',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
