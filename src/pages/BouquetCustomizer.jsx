@@ -20,6 +20,36 @@ const sceneries = [
     { id: 'bg15', name: 'Scene 15', bg: '#f5ecec', bgImage: '/background/Scene 15.jpg' },
 ];
 
+const ARRANGEMENT_SLOTS = [
+    // Center prominent (Z highest)
+    { x: 110, y: 100, z: 20 },
+    
+    // Inner ring (around center)
+    { x: 75, y: 70, z: 15 },
+    { x: 145, y: 70, z: 15 },
+    { x: 70, y: 130, z: 18 },
+    { x: 150, y: 130, z: 18 },
+    { x: 110, y: 145, z: 19 },
+
+    // Outer heart/diamond bounds
+    { x: 110, y: 40, z: 10 }, // Top center
+    { x: 55, y: 60, z: 11 },  // Top left
+    { x: 165, y: 60, z: 11 }, // Top right
+    { x: 35, y: 100, z: 12 }, // Mid left
+    { x: 185, y: 100, z: 12 },// Mid right
+    { x: 50, y: 145, z: 16 }, // Bottom left
+    { x: 170, y: 145, z: 16 },// Bottom right
+    { x: 110, y: 170, z: 17 },// Bottom point
+
+    // Extras in case they add more than 14
+    { x: 80, y: 30, z: 8 },
+    { x: 140, y: 30, z: 8 },
+    { x: 20, y: 80, z: 9 },
+    { x: 200, y: 80, z: 9 },
+    { x: 25, y: 125, z: 9 },
+    { x: 195, y: 125, z: 9 },
+];
+
 const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArrangement, scenery, setScenery, theme, setTheme }) => {
     const navigate = useNavigate();
     const containerRef = useRef(null);
@@ -53,17 +83,20 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                 if (item.quantity > existingForThisItem) {
                     // Add missing flowers
                     for (let i = existingForThisItem; i < item.quantity; i++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.random() * 40 + 10;
+                        const slotIndex = newArrangement.length % ARRANGEMENT_SLOTS.length;
+                        const slot = ARRANGEMENT_SLOTS[slotIndex];
+                        // Add slight jitter so identical flowers don't stack perfectly flat
+                        const jitterX = (Math.random() - 0.5) * 8;
+                        const jitterY = (Math.random() - 0.5) * 8;
+
                         newArrangement.push({
                             uniqueId: `${item.id}-${i}`,
                             flowerId: item.flower.id,
                             name: item.flower.name,
-                            x: 60 + Math.cos(angle) * radius,
-                            y: 110 + Math.sin(angle) * radius,
-                            z: nextZIndex
+                            x: slot.x + jitterX,
+                            y: slot.y + jitterY,
+                            z: slot.z
                         });
-                        nextZIndex++;
                         hasChanges = true;
                     }
                 }
@@ -89,16 +122,24 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
     }, [selectedBlooms, navigate, setBouquetArrangement]);
 
     const handleRandomArrange = () => {
-        const newArrangement = bouquetArrangement.map(bloom => {
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 50;
+        // Shuffle the current flowers
+        const shuffled = [...bouquetArrangement].sort(() => Math.random() - 0.5);
+        
+        // Place them into the structured slots so it retains an organized shape
+        const newArrangement = shuffled.map((bloom, index) => {
+            const slotIndex = index % ARRANGEMENT_SLOTS.length;
+            const slot = ARRANGEMENT_SLOTS[slotIndex];
+            const jitterX = (Math.random() - 0.5) * 8;
+            const jitterY = (Math.random() - 0.5) * 8;
+            
             return {
                 ...bloom,
-                x: 60 + Math.cos(angle) * radius,
-                y: 110 + Math.sin(angle) * radius,
-                z: Math.floor(Math.random() * 20)
+                x: slot.x + jitterX,
+                y: slot.y + jitterY,
+                z: slot.z
             };
         });
+        
         setBouquetArrangement(newArrangement);
     };
 
