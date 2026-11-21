@@ -4,6 +4,29 @@ import { ArrowLeft, ArrowRight, Flower } from 'lucide-react';
 import '../index.css';
 import ThemeToggle from '../components/ThemeToggle';
 
+const HEART_FLOWERS = [
+    { x: 0,   y: -17, flower: '1-Rose' },
+    { x: 5,   y: -20, flower: '1-Peony' },
+    { x: 10,  y: -19, flower: '2-Lily' },
+    { x: 14,  y: -15, flower: '1-Rose' },
+    { x: 17,  y: -9,  flower: '1-Peony' },
+    { x: 18,  y: -2,  flower: '2-Lily' },
+    { x: 16,  y: 6,   flower: '1-Rose' },
+    { x: 12,  y: 13,  flower: '1-Peony' },
+    { x: 7,   y: 18,  flower: '2-Lily' },
+    { x: 2,   y: 22,  flower: '1-Rose' },
+    { x: 0,   y: 24,  flower: '1-Peony' },
+    { x: -2,  y: 22,  flower: '1-Rose' },
+    { x: -7,  y: 18,  flower: '2-Lily' },
+    { x: -12, y: 13,  flower: '1-Peony' },
+    { x: -16, y: 6,   flower: '1-Rose' },
+    { x: -18, y: -2,  flower: '2-Lily' },
+    { x: -17, y: -9,  flower: '1-Peony' },
+    { x: -14, y: -15, flower: '1-Rose' },
+    { x: -10, y: -19, flower: '2-Lily' },
+    { x: -5,  y: -20, flower: '1-Peony' },
+];
+
 const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, setSignoff, sender, setSender, theme, setTheme }) => {
     const navigate = useNavigate();
     const [showMithilaPopup, setShowMithilaPopup] = useState(false);
@@ -19,46 +42,76 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
     };
 
     useEffect(() => {
-        if (/mithila/i.test(sender) && !hasShownPopup.current) {
-            hasShownPopup.current = true;
-            setShowMithilaPopup(true);
+        if (/mithila/i.test(sender)) {
+            if (!hasShownPopup.current) {
+                hasShownPopup.current = true;
+                setShowMithilaPopup(true);
+            }
+        } else {
+            hasShownPopup.current = false;
         }
     }, [sender]);
 
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
 
-            {/* Decorative background flowers */}
             <div style={{ position: 'absolute', top: '10%', left: '5%', opacity: 0.2 }}><Flower size={48} color="var(--color-primary)" /></div>
             <div style={{ position: 'absolute', top: '20%', right: '10%', opacity: 0.2 }}><Flower size={32} color="var(--color-accent)" /></div>
             <div style={{ position: 'absolute', bottom: '30%', left: '15%', opacity: 0.2 }}><Flower size={64} color="var(--color-secondary)" /></div>
             <div style={{ position: 'absolute', bottom: '10%', right: '5%', opacity: 0.2 }}><Flower size={40} color="var(--color-primary)" /></div>
 
-            {/* 🌸 Secret Easter Egg Popup */}
             {showMithilaPopup && (
                 <div style={{
                     position: 'fixed', inset: 0,
                     backgroundColor: 'rgba(0,0,0,0.35)',
-                    backdropFilter: 'blur(4px)',
+                    backdropFilter: 'blur(5px)',
+                    WebkitBackdropFilter: 'blur(5px)',
                     zIndex: 9999,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '1rem',
+                    overflow: 'hidden'
                 }}>
+                    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {HEART_FLOWERS.map((hf, i) => (
+                            <div
+                                key={i}
+                                style={{
+                                    position: 'absolute',
+                                    left: `calc(50% + ${hf.x} * clamp(7.5px, 2.1vw, 11px) - clamp(34px, 6.5vw, 48px))`,
+                                    top: `calc(50% + ${hf.y} * clamp(7.5px, 2.1vh, 11px) - clamp(34px, 6.5vw, 48px))`,
+                                    width: 'clamp(68px, 13vw, 96px)',
+                                    height: 'clamp(68px, 13vw, 96px)',
+                                    zIndex: 10003,
+                                    filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.18))',
+                                    animation: closingPopup
+                                        ? 'flowerHeartBurst 0.6s ease forwards'
+                                        : `flowerHeartPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.035}s both`,
+                                }}
+                            >
+                                <img
+                                    src={`/flowers/${hf.flower}.png`}
+                                    alt="Heart Flower"
+                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
                     <div style={{
                         background: 'linear-gradient(135deg, #fff0f6 0%, #fce4f5 50%, #f3e8ff 100%)',
                         borderRadius: '28px',
-                        boxShadow: '0 20px 60px rgba(205,180,219,0.5)',
+                        boxShadow: '0 20px 60px rgba(205,180,219,0.6)',
                         padding: '2.5rem 2rem',
-                        maxWidth: '320px',
+                        maxWidth: '300px',
                         width: '100%',
                         textAlign: 'center',
                         animation: closingPopup
                             ? 'heartBurst 0.6s ease forwards'
                             : 'popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
                         position: 'relative',
+                        zIndex: 10002,
                         overflow: 'hidden',
                     }}>
-                        {/* Floating hearts background */}
                         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
                             {['10%', '30%', '55%', '75%', '90%'].map((left, i) => (
                                 <span key={i} style={{
@@ -73,10 +126,8 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                             ))}
                         </div>
 
-                        {/* Big heart */}
                         <div style={{ fontSize: '3.5rem', marginBottom: '0.5rem', lineHeight: 1 }}>🩷</div>
 
-                        {/* Message */}
                         <p style={{
                             fontFamily: 'var(--font-caveat)',
                             fontSize: '2rem',
@@ -125,36 +176,63 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                             50%  { transform: translateY(-60px) scale(1.2); opacity: 0.8; }
                             100% { transform: translateY(-120px) scale(1); opacity: 0; }
                         }
+                        @keyframes flowerHeartPop {
+                            0% {
+                                opacity: 0;
+                                transform: scale(0) rotate(-30deg);
+                            }
+                            70% {
+                                opacity: 1;
+                                transform: scale(1.25) rotate(10deg);
+                            }
+                            100% {
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                        }
+                        @keyframes flowerHeartBurst {
+                            0% {
+                                opacity: 1;
+                                transform: scale(1);
+                            }
+                            40% {
+                                opacity: 1;
+                                transform: scale(1.3);
+                            }
+                            100% {
+                                opacity: 0;
+                                transform: scale(1.6) translateY(-20px);
+                            }
+                        }
                     `}</style>
                 </div>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', zIndex: 1, transform: 'scale(0.99)', transformOrigin: 'top center' }}>
-                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '2rem', zIndex: 1 }}>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem', zIndex: 1 }}>
                     <ThemeToggle theme={theme} setTheme={setTheme} />
-                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase', zIndex: 1 }}>WRITE YOUR MESSAGE</h2>
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase', zIndex: 1, color: 'var(--color-text)' }}>WRITE YOUR MESSAGE</h2>
                 </div>
 
-                <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 1rem', width: '100%' }}>
+                <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 0.5rem', width: '100%' }}>
                     <div style={{
                         width: '100%',
-                        maxWidth: '400px',
+                        maxWidth: '440px',
                         backgroundColor: 'white',
                         borderRadius: 'var(--radius-lg)',
                         boxShadow: 'var(--shadow-md)',
-                        padding: '2.5rem',
+                        padding: 'clamp(1.25rem, 4vw, 2.5rem)',
                         position: 'relative',
                         zIndex: 1
                     }}>
-                        {/* Card styling lines */}
                         <div style={{
                             position: 'absolute',
-                            top: '20px', left: '20px', right: '20px', bottom: '20px',
+                            top: '15px', left: '15px', right: '15px', bottom: '15px',
                             border: '1px solid rgba(0,0,0,0.05)',
                             pointerEvents: 'none'
                         }}></div>
 
-                        <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-primary)' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-accent)' }}>
                             <span style={{ marginRight: '0.4rem' }}>Dear</span>
                             <input
                                 type="text"
@@ -179,7 +257,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                             placeholder="I could fill a thousand of these digital cards and still not have enough space to say everything. But the most important thing you need to know is..."
                             style={{
                                 width: '100%',
-                                minHeight: '250px',
+                                minHeight: '220px',
                                 border: 'none',
                                 resize: 'none',
                                 fontFamily: 'var(--font-caveat)',
@@ -190,7 +268,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                             }}
                         />
 
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-primary)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-accent)' }}>
                             <input
                                 type="text"
                                 value={signoff}
@@ -204,7 +282,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                                     fontSize: 'inherit',
                                     color: 'inherit',
                                     textAlign: 'right',
-                                    width: '250px',
+                                    width: 'min(100%, 250px)',
                                 }}
                             />
                             <input
@@ -220,7 +298,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                                     fontSize: 'inherit',
                                     color: 'inherit',
                                     textAlign: 'right',
-                                    width: '250px',
+                                    width: 'min(100%, 250px)',
                                 }}
                             />
                         </div>

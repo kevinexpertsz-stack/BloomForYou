@@ -1,5 +1,3 @@
-// Vercel serverless function: POST /api/shorten
-// Proxies URL shortening via is.gd
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -11,21 +9,31 @@ export default async function handler(req, res) {
     const { url } = req.body || {};
     if (!url) return res.status(400).json({ error: 'URL is required' });
 
+    const host = (req.headers.host && !req.headers.host.includes('localhost'))
+        ? req.headers.host
+        : 'bloomforyou.vercel.app';
+    const publicUrl = url.replace(/^https?:\/\/localhost(:\d+)?/, `https://${host}`);
+
     try {
-        const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`);
+        const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(publicUrl)}`);
         const text = await response.text();
 
         if (text && text.startsWith('https://is.gd/')) {
             const code = text.trim().replace('https://is.gd/', '');
-            const host = req.headers.host || 'bloomforyou.vercel.app';
-            // Branded short URL: bloomforyou.vercel.app/s/CODE
             const branded = `https://${host}/s/${code}`;
             return res.status(200).json({ branded, short: text, code });
         }
 
-        // If is.gd fails, return the long URL as fallback
-        return res.status(200).json({ branded: url, short: url });
+        try {
+            const tinyRes = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(publicUrl)}`);
+            const tinyText = await tinyRes.text();
+            if (tinyText && tinyText.startsWith('https://tinyurl.com/')) {
+                return res.status(200).json({ branded: tinyText, short: tinyText });
+            }
+        } catch (_) {}
+
+        return res.status(200).json({ branded: publicUrl, short: publicUrl });
     } catch (e) {
-        return res.status(200).json({ branded: url, short: url });
+        return res.status(200).json({ branded: publicUrl, short: publicUrl });
     }
 }

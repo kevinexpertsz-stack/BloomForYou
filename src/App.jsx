@@ -27,7 +27,7 @@ const GlobalHeader = ({ theme, setTheme }) => {
         opacity: 0.9,
         fontWeight: 'normal',
         letterSpacing: '1px',
-        pointerEvents: 'none' // Ensures title doesn't capture clicks
+        pointerEvents: 'none'
       }}>
         BloomsForYou
       </h1>
@@ -62,7 +62,6 @@ function App() {
   return (
     <Router>
       <div className="app-container" style={{ position: 'relative', minHeight: '100dvh' }}>
-        {/* Global Background Overlay */}
         <div style={{
           position: 'fixed',
           top: 0,

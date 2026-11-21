@@ -21,71 +21,57 @@ const sceneries = [
 ];
 
 const ARRANGEMENT_SLOTS = [
-    // Center prominent (Z highest)
-    { x: 110, y: 100, z: 20 },
-    
-    // Inner ring (around center)
-    { x: 75, y: 70, z: 15 },
-    { x: 145, y: 70, z: 15 },
-    { x: 70, y: 130, z: 18 },
-    { x: 150, y: 130, z: 18 },
-    { x: 110, y: 145, z: 19 },
-
-    // Outer heart/diamond bounds
-    { x: 110, y: 40, z: 10 }, // Top center
-    { x: 55, y: 60, z: 11 },  // Top left
-    { x: 165, y: 60, z: 11 }, // Top right
-    { x: 35, y: 100, z: 12 }, // Mid left
-    { x: 185, y: 100, z: 12 },// Mid right
-    { x: 50, y: 145, z: 16 }, // Bottom left
-    { x: 170, y: 145, z: 16 },// Bottom right
-    { x: 110, y: 170, z: 17 },// Bottom point
-
-    // Extras in case they add more than 14
-    { x: 80, y: 30, z: 8 },
-    { x: 140, y: 30, z: 8 },
-    { x: 20, y: 80, z: 9 },
-    { x: 200, y: 80, z: 9 },
-    { x: 25, y: 125, z: 9 },
-    { x: 195, y: 125, z: 9 },
+    { x: 110, y: 115, z: 25 },
+    { x: 70, y: 75, z: 20 },
+    { x: 150, y: 75, z: 20 },
+    { x: 110, y: 195, z: 22 },
+    { x: 55, y: 175, z: 18 },
+    { x: 165, y: 175, z: 18 },
+    { x: 80, y: 35, z: 12 },
+    { x: 140, y: 30, z: 12 },
+    { x: 30, y: 120, z: 15 },
+    { x: 190, y: 120, z: 15 },
+    { x: 25, y: 55, z: 10 },
+    { x: 195, y: 55, z: 10 },
+    { x: -5, y: 95, z: 11 },
+    { x: 215, y: 95, z: 11 },
+    { x: 15, y: 150, z: 14 },
+    { x: 205, y: 150, z: 14 },
+    { x: 110, y: 155, z: 21 },
+    { x: 65, y: 110, z: 17 },
+    { x: 155, y: 110, z: 17 },
+    { x: 110, y: 60, z: 13 },
 ];
 
 const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArrangement, scenery, setScenery, theme, setTheme }) => {
     const navigate = useNavigate();
     const containerRef = useRef(null);
 
-    // Track dragging state
     const [draggingId, setDraggingId] = useState(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
-    // Sync individual blooms from selected quantities
     useEffect(() => {
         if (selectedBlooms.length === 0) {
-            navigate('/select'); // Redirect if no blooms
+            navigate('/select');
             return;
         }
 
         setBouquetArrangement(prevArrangement => {
             const newArrangement = [...prevArrangement];
             let hasChanges = false;
-            let nextZIndex = prevArrangement.length > 0 ? Math.max(...prevArrangement.map(b => b.z)) + 1 : 0;
 
             const selectedCounts = {};
             selectedBlooms.forEach(item => {
                 selectedCounts[item.id] = item.quantity;
             });
 
-            // Handle additions: Check if there are new quantities of a selected bloom
             selectedBlooms.forEach(item => {
-                // Find how many of this exact item ID exist currently
                 const existingForThisItem = prevArrangement.filter(b => b.uniqueId.startsWith(item.id + '-')).length;
 
                 if (item.quantity > existingForThisItem) {
-                    // Add missing flowers
                     for (let i = existingForThisItem; i < item.quantity; i++) {
                         const slotIndex = newArrangement.length % ARRANGEMENT_SLOTS.length;
                         const slot = ARRANGEMENT_SLOTS[slotIndex];
-                        // Add slight jitter so identical flowers don't stack perfectly flat
                         const jitterX = (Math.random() - 0.5) * 8;
                         const jitterY = (Math.random() - 0.5) * 8;
 
@@ -102,16 +88,14 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                 }
             });
 
-            // Handle removals: Remove any flowers that were decremented from selection
             const filteredArrangement = newArrangement.filter(bloom => {
                 const parts = bloom.uniqueId.split('-');
-                // Assuming uniqueId format is `flowerId-timestamp-index`
                 const indexPart = parseInt(parts.pop(), 10);
                 const baseId = parts.join('-');
 
                 if (!selectedCounts[baseId] || indexPart >= selectedCounts[baseId]) {
                     hasChanges = true;
-                    return false; // exclude removed or out of bounds items
+                    return false;
                 }
                 return true;
             });
@@ -122,10 +106,8 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
     }, [selectedBlooms, navigate, setBouquetArrangement]);
 
     const handleRandomArrange = () => {
-        // Shuffle the current flowers
         const shuffled = [...bouquetArrangement].sort(() => Math.random() - 0.5);
         
-        // Place them into the structured slots so it retains an organized shape
         const newArrangement = shuffled.map((bloom, index) => {
             const slotIndex = index % ARRANGEMENT_SLOTS.length;
             const slot = ARRANGEMENT_SLOTS[slotIndex];
@@ -144,12 +126,10 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
     };
 
     const handlePointerDown = (e, uniqueId, currentX, currentY) => {
-        // Only trigger on left-click or touch
         if (e.button !== 0 && e.pointerType === 'mouse') return;
 
         if (containerRef.current) {
             const rect = containerRef.current.getBoundingClientRect();
-            // Calculate current visual scale from container width/height vs native 400/500
             const scaleX = rect.width / 400;
             const scaleY = rect.height / 500;
             const pointerX = (e.clientX - rect.left) / scaleX;
@@ -158,7 +138,6 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
         }
         setDraggingId(uniqueId);
 
-        // Bring to front naturally
         const maxZ = Math.max(...bouquetArrangement.map(b => b.z), 0);
         setBouquetArrangement(prev => prev.map(b =>
             b.uniqueId === uniqueId ? { ...b, z: maxZ + 1 } : b
@@ -198,8 +177,6 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
         setScenery(sceneries[nextIndex].id);
     };
 
-    // Removed getFlowerStyle as we're using images now
-
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%', transform: 'scale(0.935)', transformOrigin: 'top center' }}>
@@ -208,7 +185,6 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Customize Your Bouquet</h2>
                 </div>
 
-                {/* Both buttons side by side above canvas */}
                 <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '400px', margin: '0 auto 0.6rem auto' }}>
                     <button className="btn btn-outline" onClick={handleRandomArrange} style={{ flex: 1, fontSize: '0.65rem', padding: '0.35rem 0.4rem', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>
                         <Shuffle size={11} /> Random Arrangement
@@ -218,7 +194,6 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                     </button>
                 </div>
 
-                {/* Canvas box */}
                 <div style={{ display: 'flex', justifyContent: 'center', flex: 1, marginBottom: '0.4rem' }}>
                     <div
                         ref={containerRef}
@@ -233,7 +208,6 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                             margin: '0 auto'
                         }}
                     >
-                        {/* Masked Scenery Layer */}
                         <div style={{
                             position: 'absolute',
                             top: 0, left: 0, right: 0, bottom: 0,
@@ -247,7 +221,6 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                             zIndex: -1
                         }} />
 
-                        {/* Bouquet Wrapper Graphic */}
                         <img
                             src="/background/Bouquet.png"
                             alt="Bouquet Wrapper"
@@ -318,8 +291,6 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                     </div>
                 </div>
 
-
-
                 <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '600px', margin: '0.5rem auto 0', width: '100%' }}>
                     <button
                         className="btn btn-outline"
@@ -336,10 +307,7 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                         Continue <ArrowRight size={18} />
                     </button>
                 </div>
-
             </div>
-
-            <div style={{ flex: 1, minHeight: '1rem' }}></div>
         </div>
     );
 };

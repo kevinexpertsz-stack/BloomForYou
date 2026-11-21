@@ -1,36 +1,35 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Link as LinkIcon, Check } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Check, Link as LinkIcon } from 'lucide-react';
 import '../index.css';
 import ThemeToggle from '../components/ThemeToggle';
 
 const sceneries = {
-    'bg2':  { bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
-    'bg3':  { bg: '#f2e8e9', bgImage: '/background/Scene 03.jpg' },
-    'bg5':  { bg: '#f7ecec', bgImage: '/background/Scene 05.jpg' },
-    'bg6':  { bg: '#eceef7', bgImage: '/background/Scene 06.jpg' },
-    'bg7':  { bg: '#f5f0e6', bgImage: '/background/Scene 07.jpg' },
-    'bg8':  { bg: '#edece6', bgImage: '/background/Scene 08.jpg' },
-    'bg9':  { bg: '#f9f6f2', bgImage: '/background/Scene 09.jpg' },
-    'bg10': { bg: '#f5f5f0', bgImage: '/background/Scene 10.jpg' },
-    'bg11': { bg: '#f0f5f5', bgImage: '/background/Scene 11.jpg' },
-    'bg12': { bg: '#f5f0f5', bgImage: '/background/Scene 12.jpg' },
-    'bg13': { bg: '#f5f5ec', bgImage: '/background/Scene 13.jpg' },
-    'bg14': { bg: '#ecf0f5', bgImage: '/background/Scene 14.jpg' },
-    'bg15': { bg: '#f5ecec', bgImage: '/background/Scene 15.jpg' },
+    bg2:  { name: 'Scene 02', bg: '#fcf6f0', bgImage: '/background/Scene 02.jpg' },
+    bg3:  { name: 'Scene 03', bg: '#f2e8e9', bgImage: '/background/Scene 03.jpg' },
+    bg5:  { name: 'Scene 05', bg: '#f7ecec', bgImage: '/background/Scene 05.jpg' },
+    bg6:  { name: 'Scene 06', bg: '#eceef7', bgImage: '/background/Scene 06.jpg' },
+    bg7:  { name: 'Scene 07', bg: '#f5f0e6', bgImage: '/background/Scene 07.jpg' },
+    bg8:  { name: 'Scene 08', bg: '#edece6', bgImage: '/background/Scene 08.jpg' },
+    bg9:  { name: 'Scene 09', bg: '#f9f6f2', bgImage: '/background/Scene 09.jpg' },
+    bg10: { name: 'Scene 10', bg: '#f5f5f0', bgImage: '/background/Scene 10.jpg' },
+    bg11: { name: 'Scene 11', bg: '#f0f5f5', bgImage: '/background/Scene 11.jpg' },
+    bg12: { name: 'Scene 12', bg: '#f5f0f5', bgImage: '/background/Scene 12.jpg' },
+    bg13: { name: 'Scene 13', bg: '#f5f5ec', bgImage: '/background/Scene 13.jpg' },
+    bg14: { name: 'Scene 14', bg: '#ecf0f5', bgImage: '/background/Scene 14.jpg' },
+    bg15: { name: 'Scene 15', bg: '#f5ecec', bgImage: '/background/Scene 15.jpg' },
 };
 
 const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff, sender, onReset, theme, setTheme }) => {
-    const navigate = useNavigate();
     const location = useLocation();
+    const navigate = useNavigate();
     const [copied, setCopied] = useState(false);
     const [sharing, setSharing] = useState(false);
     const [loadedData, setLoadedData] = useState(null);
 
-    // Parse URL parameters
     const queryParams = new URLSearchParams(location.search);
     const gistParam = queryParams.get('g');
-    const sharedDataParam = queryParams.get('data'); // /final?data=BASE64
+    const sharedDataParam = queryParams.get('data');
     const isSharedView = !!(gistParam || sharedDataParam);
 
     let displayArrangement = loadedData ? loadedData.bouquetArrangement : bouquetArrangement;
@@ -40,7 +39,6 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     let displaySignoff = loadedData ? loadedData.signoff : signoff;
     let displaySender = loadedData ? loadedData.sender : sender;
 
-    // Load from GitHub Gist if ?g= param present
     useEffect(() => {
         if (!gistParam) return;
         fetch(`https://api.github.com/gists/${gistParam}`)
@@ -64,12 +62,9 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             .catch(e => console.error('Failed to load shared bouquet', e));
     }, [gistParam]);
 
-    // Legacy fallback: load from ?data= base64 param
     useEffect(() => {
         if (!sharedDataParam || gistParam) return;
         try {
-            // Robust Fix for "blank link" bug: URL-unfriendly chars (+, /, =) can get converted to spaces
-            // We replace them back before decoding to ensure atob() never fails.
             const normalizedBase64 = sharedDataParam.replace(/ /g, '+');
             const raw = JSON.parse(decodeURIComponent(escape(atob(normalizedBase64))));
             
@@ -95,7 +90,6 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
 
     const handleCopyLink = async () => {
         setSharing(true);
-        // Build compact JSON for sharing
         const compact = {
             b: displayArrangement.map(bloom => ({
                 f: bloom.flowerId,
@@ -106,14 +100,14 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             sn: displaySender, t: theme
         };
 
-        // encodeURIComponent the base64 — base64 contains +, /, = which break URLs.
-        // We MUST use encodeURIComponent to ensure it remains valid when shortened.
         const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-        const longUrl = `${window.location.origin}/final?data=${encodeURIComponent(base64)}`;
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const prodOrigin = 'https://bloomforyou.vercel.app';
+        const targetOrigin = isLocal ? prodOrigin : window.location.origin;
+        const longUrl = `${targetOrigin}/final?data=${encodeURIComponent(base64)}`;
 
         let shareUrl = longUrl;
 
-        // Try to shorten via Vercel serverless proxy (is.gd)
         try {
             const res = await fetch('/api/shorten', {
                 method: 'POST',
@@ -122,31 +116,26 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             });
             if (res.ok) {
                 const json = await res.json();
-                if (json.branded && json.branded.startsWith('http')) shareUrl = json.branded;
+                if (json.branded && json.branded.startsWith('http')) {
+                    shareUrl = json.branded;
+                } else if (json.short && json.short.startsWith('http')) {
+                    shareUrl = json.short;
+                }
             }
-        } catch (_) { /* shortener failed, keep longUrl */ }
+        } catch (_) {}
 
-        // iOS-safe clipboard write:
-        // navigator.clipboard.writeText only works on iOS if the site is HTTPS
-        // AND the call is synchronously triggered by a user gesture.
-        // As an extra fallback we use the textarea + execCommand trick.
         const copyToClipboard = async (text) => {
-            // Try modern API first (works on Android + desktop Chrome/Firefox)
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 try {
                     await navigator.clipboard.writeText(text);
                     return true;
                 } catch (_) {}
             }
-            // iOS Safari fallback: create a temporary textarea, select its content,
-            // and use execCommand('copy') which IS synchronous and works on iOS.
             const ta = document.createElement('textarea');
             ta.value = text;
             ta.setAttribute('readonly', '');
-            // Position off-screen but still in the document
             ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
             document.body.appendChild(ta);
-            // iOS requires saving and restoring any existing selection
             const selection = window.getSelection();
             const range = document.createRange();
             ta.contentEditable = 'true';
@@ -154,7 +143,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             range.selectNodeContents(ta);
             selection.removeAllRanges();
             selection.addRange(range);
-            ta.setSelectionRange(0, 999999); // For iOS
+            ta.setSelectionRange(0, 999999);
             const success = document.execCommand('copy');
             document.body.removeChild(ta);
             return success;
@@ -167,30 +156,26 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
         setTimeout(() => setCopied(false), 2000);
     };
 
-
-    // Removed getFlowerStyle - using images
-
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '4rem' }}>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: 'clamp(1rem, 2.5vh, 2rem)' }}>
                     <ThemeToggle theme={theme} setTheme={setTheme} />
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Fresh Blooms Just For You!</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', justifyContent: 'center', width: '100%', maxWidth: '1000px', transform: 'scale(1.05)', transformOrigin: 'top center', marginBottom: '5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1.5rem, 3vw, 3rem)', justifyContent: 'center', width: '100%', maxWidth: '960px', marginBottom: '2.5rem' }}>
 
-                    {/* Bouquet Display (Read-Only) */}
                     <div style={{
                         width: '100%',
                         maxWidth: '430px',
                         aspectRatio: '4 / 5',
-                        maxHeight: '70vh', /* Prevents overflowing height on short phones */
+                        maxHeight: '70vh',
                         overflow: 'hidden',
                         position: 'relative',
-                        margin: '0 auto',
+                        boxShadow: 'var(--shadow-lg)',
+                        borderRadius: 'var(--radius-lg)'
                     }}>
-                        {/* Masked Scenery Layer */}
                         <div style={{
                             position: 'absolute',
                             top: 0, left: 0, right: 0, bottom: 0,
@@ -203,7 +188,6 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                             zIndex: -1
                         }} />
 
-                        {/* Bouquet Wrapper Graphic */}
                         <img
                             src="/background/Bouquet.png"
                             alt="Bouquet Wrapper"
@@ -250,17 +234,16 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                         ))}
                     </div>
 
-                    {/* Message Card */}
-                    <div style={{ flex: '1 1 300px', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div style={{ flex: '1 1 300px', maxWidth: '440px', display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
                         <div style={{
                             backgroundColor: 'white',
                             borderRadius: 'var(--radius-lg)',
                             boxShadow: 'var(--shadow-md)',
-                            padding: '2.5rem',
+                            padding: 'clamp(1.25rem, 4vw, 2.5rem)',
                             position: 'relative',
-                            minHeight: '300px'
+                            minHeight: '280px'
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-primary)' }}>
+                            <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-accent)' }}>
                                 <span style={{ marginRight: '0.4rem' }}>Dear</span>
                                 <span>{displayRecipient || <span style={{ opacity: 0.6 }}>Beloved ,</span>}</span>
                             </div>
@@ -276,7 +259,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                 {displayMessage || <span style={{ opacity: 0.6 }}>I could fill a thousand of these digital cards and still not have enough space to say everything. But the most important thing you need to know is...</span>}
                             </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-primary)' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-accent)' }}>
                                 <p style={{ margin: 0 }}>{displaySignoff || <span style={{ opacity: 0.6 }}>Always ,</span>}</p>
                                 <p style={{ margin: 0 }}>{displaySender || <span style={{ opacity: 0.6 }}>Secret Admirer</span>}</p>
                             </div>
@@ -298,7 +281,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                 disabled={sharing}
                                 style={{ flex: 1, padding: '0.75rem', backgroundColor: copied ? '#4caf50' : '', color: copied ? 'white' : '', borderColor: copied ? '#4caf50' : '' }}
                             >
-                                {sharing ? '⏳ Creating link...' : copied ? <><Check size={18} /> Copied!</> : <><LinkIcon size={18} /> Copy Link</>}
+                                {sharing ? 'Creating link...' : copied ? <><Check size={18} /> Copied!</> : <><LinkIcon size={18} /> Copy Link</>}
                             </button>
                         </div>
 
@@ -321,14 +304,11 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                     letterSpacing: 'inherit'
                                 }}
                             >
-                                Make your own bouquet!
+                                MAKE YOUR OWN BOUQUET!
                             </button>
                         </div>
                     </div>
-
                 </div>
-
-                <div style={{ flex: 1, minHeight: '1rem' }}></div>
             </div>
         </div>
     );

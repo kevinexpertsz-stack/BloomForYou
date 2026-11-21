@@ -18,12 +18,12 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
     };
 
     const totalBlooms = selectedBlooms.reduce((acc, current) => acc + current.quantity, 0);
-    const minBlooms = 6;
-    const maxBlooms = 15;
+    const minBlooms = 12;
+    const maxBlooms = 20;
 
     const handleCategoryClick = (category) => {
         setActiveCategory(activeCategory?.id === category.id ? null : category);
-        setActiveFlower(null); // Reset flower when changing category
+        setActiveFlower(null);
     };
 
     const handleFlowerClick = (flower) => {
@@ -79,12 +79,10 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
 
                 <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
 
-                    {/* Left Side: Categories & Selection */}
                     <div style={{ flex: '1 1 60%', minWidth: '300px' }}>
                         {activeCategory ? (
-                            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', alignItems: 'flex-start' }}>
-                                {/* Left Side: Active Category */}
-                                <div style={{ flex: '1 1 50%' }}>
+                            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                                <div style={{ flex: '1 1 280px', width: '100%' }}>
                                     <div className="animate-fade-in" style={{ marginBottom: '1.5rem' }}>
                                         <button
                                             onClick={() => handleCategoryClick(activeCategory)}
@@ -106,7 +104,7 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                                             <div style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                                                 {activeCategory.flowers.slice(0, 3).map(f => f.name).join(', ')}...
                                             </div>
-                                            <div className="custom-tooltip">{activeCategory.description}</div>
+                                            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', marginTop: '0.5rem', lineHeight: '1.4' }}>{activeCategory.description}</p>
                                         </button>
 
                                         <div style={{
@@ -153,8 +151,7 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                                     </div>
                                 </div>
 
-                                {/* Right Side: Inactive Categories */}
-                                <div style={{ flex: '1 1 50%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <div style={{ flex: '1 1 280px', width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     {flowerData.categories.filter(c => c.id !== activeCategory.id).map(category => (
                                         <div key={category.id} className="animate-fade-in">
                                             <button
@@ -213,7 +210,6 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                         )}
                     </div>
 
-                    {/* Right Side: Current Selection (Cart) */}
                     <div style={{ flex: '1 1 30%', minWidth: '250px' }}>
                         <div style={{
                             backgroundColor: 'white',
@@ -264,20 +260,20 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                                 </p>
                             )}
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.6rem', flexWrap: 'wrap' }}>
                                 <button
                                     className="btn btn-outline"
                                     onClick={() => navigate('/')}
-                                    style={{ flex: 1, padding: '0.75rem' }}
+                                    style={{ flex: '1 1 110px', minWidth: '95px', padding: '0.75rem 0.5rem', fontSize: '0.85rem' }}
                                 >
-                                    <ArrowLeft size={18} /> Back
+                                    <ArrowLeft size={16} /> Back
                                 </button>
                                 <button
                                     className={`btn ${totalBlooms >= minBlooms ? 'btn-primary' : 'btn-disabled'}`}
                                     onClick={handleContinue}
-                                    style={{ flex: 1, padding: '0.75rem' }}
+                                    style={{ flex: '1 1 110px', minWidth: '95px', padding: '0.75rem 0.5rem', fontSize: '0.85rem' }}
                                 >
-                                    Continue <ArrowRight size={18} />
+                                    Continue <ArrowRight size={16} />
                                 </button>
                             </div>
                         </div>
@@ -287,9 +283,53 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
 
             </div >
 
+            <div className="mobile-floating-bar" style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                borderTop: '1px solid rgba(0,0,0,0.08)',
+                padding: '0.75rem 1rem max(env(safe-area-inset-bottom, 0px), 0.75rem) 1rem',
+                display: 'none',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                zIndex: 999,
+                boxShadow: '0 -4px 16px rgba(0,0,0,0.08)'
+            }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <span>💐</span>
+                        <span>{totalBlooms}/{maxBlooms} blooms</span>
+                    </div>
+                    {totalBlooms < minBlooms ? (
+                        <span style={{ fontSize: '0.75rem', color: '#e74c3c' }}>Add {minBlooms - totalBlooms} more</span>
+                    ) : (
+                        <span style={{ fontSize: '0.75rem', color: '#4caf50' }}>Ready to customize!</span>
+                    )}
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                        className="btn btn-outline"
+                        onClick={() => navigate('/')}
+                        style={{ padding: '0.5rem 0.8rem', fontSize: '0.8rem' }}
+                    >
+                        <ArrowLeft size={16} />
+                    </button>
+                    <button
+                        className={`btn ${totalBlooms >= minBlooms ? 'btn-primary' : 'btn-disabled'}`}
+                        onClick={handleContinue}
+                        style={{ padding: '0.5rem 1.1rem', fontSize: '0.85rem' }}
+                    >
+                        Continue <ArrowRight size={16} />
+                    </button>
+                </div>
+            </div>
+
             <div style={{ flex: 1, minHeight: '1rem' }}></div>
 
-            {/* Custom Alert Modal */}
             {isAlertVisible && (
                 <div style={{
                     position: 'fixed',
