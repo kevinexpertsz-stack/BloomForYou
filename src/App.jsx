@@ -157,6 +157,7 @@ function App() {
             />
           </Routes>
         </main>
+        <SpeedInsights />
       </div>
     </Router>
   )
