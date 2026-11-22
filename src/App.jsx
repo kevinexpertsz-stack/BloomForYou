@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import Home from './pages/Home'
 import BloomSelection from './pages/BloomSelection'
 import BouquetCustomizer from './pages/BouquetCustomizer'
@@ -155,6 +156,7 @@ function App() {
             />
           </Routes>
         </main>
+        <SpeedInsights />
       </div>
     </Router>
   )
