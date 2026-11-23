@@ -37,6 +37,8 @@ const GlobalHeader = ({ theme, setTheme }) => {
   );
 };
 
+const THEMES = ['default', 'sunflower', 'blueflower', 'orchid', 'alstromeria', 'ranuculus'];
+
 function App() {
   const [selectedBlooms, setSelectedBlooms] = useState([]);
   const [bouquetArrangement, setBouquetArrangement] = useState([]);
@@ -45,7 +47,7 @@ function App() {
   const [recipient, setRecipient] = useState('');
   const [signoff, setSignoff] = useState('');
   const [sender, setSender] = useState('');
-  const [theme, setTheme] = useState('default');
+  const [theme, setTheme] = useState(() => THEMES[Math.floor(Math.random() * THEMES.length)]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
