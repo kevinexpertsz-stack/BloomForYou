@@ -38,22 +38,62 @@ const GlobalHeader = ({ theme, setTheme }) => {
 };
 
 const THEMES = ['default', 'sunflower', 'blueflower', 'orchid', 'alstromeria', 'ranuculus'];
+const DRAFT_KEY = 'bloom_draft';
+
+const loadDraft = () => {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const saveDraft = (draft) => {
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch {}
+};
+
+const clearDraft = () => {
+  try {
+    sessionStorage.removeItem(DRAFT_KEY);
+  } catch {}
+};
 
 function App() {
-  const [selectedBlooms, setSelectedBlooms] = useState([]);
-  const [bouquetArrangement, setBouquetArrangement] = useState([]);
-  const [scenery, setScenery] = useState('bg3');
-  const [message, setMessage] = useState('');
-  const [recipient, setRecipient] = useState('');
-  const [signoff, setSignoff] = useState('');
-  const [sender, setSender] = useState('');
-  const [theme, setTheme] = useState(() => THEMES[Math.floor(Math.random() * THEMES.length)]);
+  const initialDraft = loadDraft();
+
+  const [selectedBlooms, setSelectedBlooms] = useState(() => initialDraft?.selectedBlooms || []);
+  const [bouquetArrangement, setBouquetArrangement] = useState(() => initialDraft?.bouquetArrangement || []);
+  const [scenery, setScenery] = useState(() => initialDraft?.scenery || 'bg3');
+  const [message, setMessage] = useState(() => initialDraft?.message || '');
+  const [recipient, setRecipient] = useState(() => initialDraft?.recipient || '');
+  const [signoff, setSignoff] = useState(() => initialDraft?.signoff || '');
+  const [sender, setSender] = useState(() => initialDraft?.sender || '');
+  const [theme, setTheme] = useState(() => initialDraft?.theme || THEMES[Math.floor(Math.random() * THEMES.length)]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    if (selectedBlooms.length > 0 || message || recipient || signoff || sender) {
+      saveDraft({
+        selectedBlooms,
+        bouquetArrangement,
+        scenery,
+        message,
+        recipient,
+        signoff,
+        sender,
+        theme
+      });
+    }
+  }, [selectedBlooms, bouquetArrangement, scenery, message, recipient, signoff, sender, theme]);
+
   const handleReset = () => {
+    clearDraft();
     setSelectedBlooms([]);
     setBouquetArrangement([]);
     setScenery('bg3');

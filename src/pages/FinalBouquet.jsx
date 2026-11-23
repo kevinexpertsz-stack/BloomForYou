@@ -117,6 +117,10 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
         const initialUrl = getLongUrl();
         setPreparedUrl(initialUrl);
 
+        if (!location.search.includes('data=') && !location.search.includes('g=')) {
+            window.history.replaceState(null, '', initialUrl);
+        }
+
         fetch('/api/shorten', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
