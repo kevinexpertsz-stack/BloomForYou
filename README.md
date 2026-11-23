@@ -1,16 +1,77 @@
-# React + Vite
+# 🌸 BloomsForYou
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **Send Beautiful Digital Bouquets & Forever Flowers to Loved Ones**
 
-Currently, two official plugins are available:
+[![Live Website](https://img.shields.io/badge/Live_Site-bloomforyou.vercel.app-ff69b4?style=for-the-badge&logo=vercel)](https://bloomforyou.vercel.app)
+[![Built with React](https://img.shields.io/badge/Built_with-React_19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![Powered by Vite](https://img.shields.io/badge/Bundled_with-Vite-646CFF?style=for-the-badge&logo=vite)](https://vite.dev/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**BloomsForYou** is a modern, interactive web application that allows users to craft and send personalized virtual flower bouquets with handwritten-style digital greeting cards. Every bouquet is uniquely customizable and can be shared with a single, compact link that never expires.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+* **💐 Curated Flower Selection:** Choose from multiple floral categories including *Classic & Romantic*, *Elegant & Striking*, *Bright & Cheerful*, and more (pick between 12 to 20 blooms per bouquet).
+* **🎨 Interactive Bouquet Customizer:**
+  * Drag and position flowers freely on the canvas.
+  * **Random Arrangement:** Instantly generate balanced floral layouts nestled inside an authentic kraft paper wrapping cone.
+  * **Dynamic Sceneries:** Switch between aesthetic watercolor backdrops to match the bouquet's mood.
+* **💌 Digital Greeting Card:** Write a personal letter with custom recipient, heartfelt message, and sign-off in an elegant handwritten font.
+* **🔗 Compact Short Link Sharing:** Built-in URL generation creates short, shareable links (`/s/...`) so you can send your bouquet over WhatsApp, iMessage, or Instagram.
+* **📱 Fully Responsive:** Optimized for both desktop and mobile devices, including touch-friendly flower picking and a sticky bottom cart.
+* **🎨 Dynamic Theme Switching:** Tap the logo to toggle between aesthetic pastel color themes (Sunflower, Blue Flower, Orchid, Alstroemeria, and Ranunculus).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tech Stack & Languages
+
+* **Frontend Framework:** **React 19**
+* **Build Tool:** **Vite 7** (Fast Refresh, optimized production bundling)
+* **Core Languages:**
+  * **JavaScript (ES6+)** – Application logic, state management, and coordinate math
+  * **HTML5** – Semantic structure and OpenGraph SEO metadata
+  * **CSS3** – Responsive flexbox/grid layout, CSS variables, touch actions, and keyframe animations
+* **Routing:** **React Router v7**
+* **Icons:** **Lucide React**
+* **Hosting & Backend:** **Vercel**
+  * **Vercel Serverless Functions** (Node.js API for link shortening)
+  * **Vercel Speed Insights** (Real-time Core Web Vitals monitoring)
+  * **Vercel Web Analytics** (Privacy-friendly visitor traffic tracking)
+
+---
+
+## 🚀 Getting Started Locally
+
+### Prerequisites
+* **Node.js** (v18 or higher recommended)
+* **npm** or **yarn**
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/kevinexpertsz-stack/BloomForYou.git
+   cd BloomForYou
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the local development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 👨‍💻 Author
+
+Created with ❤️ by **[@cubickevin](https://www.instagram.com/cubickevin)**
