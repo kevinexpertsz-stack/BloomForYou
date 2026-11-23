@@ -31,7 +31,9 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
     const navigate = useNavigate();
     const [showMithilaPopup, setShowMithilaPopup] = useState(false);
     const [closingPopup, setClosingPopup] = useState(false);
+    const [showBlankModal, setShowBlankModal] = useState(false);
     const hasShownPopup = useRef(false);
+    const textareaRef = useRef(null);
 
     const handleCloseMithila = () => {
         setClosingPopup(true);
@@ -39,6 +41,28 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
             setShowMithilaPopup(false);
             setClosingPopup(false);
         }, 600);
+    };
+
+    const handleShareClick = () => {
+        if (!message || !message.trim()) {
+            setShowBlankModal(true);
+            return;
+        }
+        navigate('/final');
+    };
+
+    const handleWriteNote = () => {
+        setShowBlankModal(false);
+        setTimeout(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+            }
+        }, 50);
+    };
+
+    const handleContinueBlank = () => {
+        setShowBlankModal(false);
+        navigate('/final');
     };
 
     useEffect(() => {
@@ -252,9 +276,10 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                         </div>
 
                         <textarea
+                            ref={textareaRef}
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            placeholder="I could fill a thousand of these digital cards and still not have enough space to say everything. But the most important thing you need to know is..."
+                            placeholder="Write something heartfelt here..."
                             style={{
                                 width: '100%',
                                 minHeight: '220px',
@@ -315,7 +340,7 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
                     </button>
                     <button
                         className="btn btn-primary"
-                        onClick={() => navigate('/final')}
+                        onClick={handleShareClick}
                         style={{ width: '48%', padding: '0.75rem' }}
                     >
                         Share <ArrowRight size={18} />
@@ -326,6 +351,67 @@ const WriteMessage = ({ message, setMessage, recipient, setRecipient, signoff, s
             </div>
 
             <div style={{ flex: 1, minHeight: '1rem' }}></div>
+
+            {showBlankModal && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000,
+                    padding: '1rem'
+                }}>
+                    <div style={{
+                        backgroundColor: 'var(--color-bg)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: '2rem',
+                        maxWidth: '380px',
+                        width: '100%',
+                        textAlign: 'center',
+                        boxShadow: 'var(--shadow-lg)',
+                        borderTop: '6px solid var(--color-accent)'
+                    }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>💌</div>
+                        <h3 style={{
+                            color: 'var(--color-text)',
+                            margin: '0 0 0.75rem',
+                            fontSize: '1.2rem',
+                            fontFamily: 'var(--font-main)',
+                            fontWeight: '600'
+                        }}>
+                            Card is blank
+                        </h3>
+                        <p style={{
+                            color: 'var(--color-text-light)',
+                            fontSize: '0.95rem',
+                            lineHeight: '1.5',
+                            margin: '0 0 1.75rem'
+                        }}>
+                            You haven't written a message yet. Would you like to write a personal note, or send with a blank card?
+                        </p>
+                        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+                            <button
+                                className="btn btn-outline"
+                                onClick={handleContinueBlank}
+                                style={{ flex: 1, padding: '0.75rem 0.5rem', fontSize: '0.9rem' }}
+                            >
+                                Send Blank
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={handleWriteNote}
+                                style={{ flex: 1, padding: '0.75rem 0.5rem', fontSize: '0.9rem' }}
+                            >
+                                Write Note
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

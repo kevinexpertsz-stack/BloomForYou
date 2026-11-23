@@ -256,7 +256,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                 color: 'var(--color-text)',
                                 minHeight: '100px'
                             }}>
-                                {displayMessage || <span style={{ opacity: 0.6 }}>I could fill a thousand of these digital cards and still not have enough space to say everything. But the most important thing you need to know is...</span>}
+                                {displayMessage || null}
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '1rem', fontFamily: 'var(--font-caveat)', fontSize: '1.8rem', color: 'var(--color-accent)' }}>

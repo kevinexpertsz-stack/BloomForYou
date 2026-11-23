@@ -18,7 +18,7 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
     };
 
     const totalBlooms = selectedBlooms.reduce((acc, current) => acc + current.quantity, 0);
-    const minBlooms = 12;
+    const minBlooms = 10;
     const maxBlooms = 20;
 
     const handleCategoryClick = (category) => {
@@ -72,9 +72,12 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', flex: 1, display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div className="delay-1 animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '2rem' }}>
-                    <ThemeToggle theme={theme} setTheme={setTheme} />
-                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Select Your Blooms</h2>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem' }}>
+                        <ThemeToggle theme={theme} setTheme={setTheme} />
+                        <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Select Your Blooms</h2>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-light)', fontFamily: 'var(--font-mono)', letterSpacing: '1px' }}>Choose 10 to 20 blooms to fill your bouquet</p>
                 </div>
 
                 <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
@@ -273,7 +276,7 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                                     onClick={handleContinue}
                                     style={{ flex: '1 1 110px', minWidth: '95px', padding: '0.75rem 0.5rem', fontSize: '0.85rem' }}
                                 >
-                                    Continue <ArrowRight size={16} />
+                                    {totalBlooms < minBlooms ? `Add ${minBlooms - totalBlooms} more` : <>Continue <ArrowRight size={16} /></>}
                                 </button>
                             </div>
                         </div>
@@ -323,7 +326,7 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                         onClick={handleContinue}
                         style={{ padding: '0.5rem 1.1rem', fontSize: '0.85rem' }}
                     >
-                        Continue <ArrowRight size={16} />
+                        {totalBlooms < minBlooms ? `Add ${minBlooms - totalBlooms} more` : <>Continue <ArrowRight size={16} /></>}
                     </button>
                 </div>
             </div>
