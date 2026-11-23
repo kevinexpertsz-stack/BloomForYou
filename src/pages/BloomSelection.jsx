@@ -18,7 +18,7 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
     };
 
     const totalBlooms = selectedBlooms.reduce((acc, current) => acc + current.quantity, 0);
-    const minBlooms = 10;
+    const minBlooms = 12;
     const maxBlooms = 20;
 
     const handleCategoryClick = (category) => {
@@ -28,7 +28,6 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
 
     const handleFlowerClick = (flower) => {
         if (totalBlooms >= maxBlooms) {
-            showAlert(`You can only select up to ${maxBlooms} blooms.`);
             return;
         }
 
@@ -77,7 +76,6 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                         <ThemeToggle theme={theme} setTheme={setTheme} />
                         <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Select Your Blooms</h2>
                     </div>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-light)', fontFamily: 'var(--font-mono)', letterSpacing: '1px' }}>Choose 10 to 20 blooms to fill your bouquet</p>
                     <div style={{
                         marginTop: '0.25rem',
                         display: 'inline-flex',

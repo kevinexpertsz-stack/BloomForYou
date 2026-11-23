@@ -59,16 +59,6 @@ export const flowerData = {
                 { id: "5-Delphinium", name: "Delphinium" },
                 { id: "5-Gladioulus", name: "Gladiolus" }
             ]
-        },
-        {
-            id: "fillers-accents",
-            name: "Fillers & Accents",
-            description: "Tiny blooms and greens used to seamlessly blend and complete the bouquet's look.",
-            flowers: [
-                { id: "6-Baby's breath", name: "Baby's Breath" },
-                { id: "6-Statice", name: "Statice" },
-                { id: "6-Wax Flower", name: "Wax Flower" }
-            ]
         }
     ]
 };
