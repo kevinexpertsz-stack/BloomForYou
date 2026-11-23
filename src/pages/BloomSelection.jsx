@@ -72,12 +72,33 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', flex: 1, display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div className="delay-1 animate-fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginBottom: '2rem' }}>
+                <div className="delay-1 animate-fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginBottom: '2rem', textAlign: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem' }}>
                         <ThemeToggle theme={theme} setTheme={setTheme} />
                         <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Select Your Blooms</h2>
                     </div>
                     <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-light)', fontFamily: 'var(--font-mono)', letterSpacing: '1px' }}>Choose 10 to 20 blooms to fill your bouquet</p>
+                    <div style={{
+                        marginTop: '0.25rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        padding: '0.3rem 0.85rem',
+                        borderRadius: '20px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                        fontSize: '0.85rem',
+                        fontFamily: 'var(--font-mono)',
+                        fontWeight: '600',
+                        color: totalBlooms >= minBlooms ? 'var(--color-primary)' : 'var(--color-text)'
+                    }}>
+                        <span>💐</span>
+                        <span>{totalBlooms} / {maxBlooms} blooms selected</span>
+                        {totalBlooms < minBlooms ? (
+                            <span style={{ color: '#e74c3c', fontWeight: '500' }}>({minBlooms - totalBlooms} more needed)</span>
+                        ) : (
+                            <span style={{ color: '#27ae60', fontWeight: '500' }}>✓ ready</span>
+                        )}
+                    </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
@@ -120,35 +141,80 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                                         }}>
                                             <h4 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Available Flowers:</h4>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                                {activeCategory.flowers.map(flower => (
-                                                    <div key={flower.id}>
-                                                        <button
-                                                            onClick={() => handleFlowerClick(flower)}
-                                                            style={{
-                                                                width: '100%',
-                                                                padding: '0.75rem 1rem',
-                                                                borderRadius: 'var(--radius-sm)',
-                                                                border: '1px solid',
-                                                                borderColor: '#eee',
-                                                                backgroundColor: 'white',
-                                                                cursor: 'pointer',
-                                                                textAlign: 'left',
-                                                                display: 'flex',
-                                                                justifyContent: 'space-between',
-                                                                alignItems: 'center',
-                                                                transition: 'var(--transition)'
-                                                            }}
-                                                        >
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                                <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#f0f0f0', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                                                                    <img src={`/flowers/${flower.id}.png`} alt={flower.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.style.backgroundColor = 'var(--color-primary)'; }} />
+                                                {activeCategory.flowers.map(flower => {
+                                                    const selectedItem = selectedBlooms.find(b => b.flower.id === flower.id);
+                                                    const selectedCount = selectedItem ? selectedItem.quantity : 0;
+
+                                                    return (
+                                                        <div key={flower.id}>
+                                                            <button
+                                                                onClick={() => handleFlowerClick(flower)}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    padding: '0.75rem 1rem',
+                                                                    borderRadius: 'var(--radius-sm)',
+                                                                    border: selectedCount > 0 ? '1.5px solid var(--color-primary)' : '1px solid #eee',
+                                                                    backgroundColor: 'white',
+                                                                    cursor: 'pointer',
+                                                                    textAlign: 'left',
+                                                                    display: 'flex',
+                                                                    justifyContent: 'space-between',
+                                                                    alignItems: 'center',
+                                                                    transition: 'var(--transition)'
+                                                                }}
+                                                            >
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#f0f0f0', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                                                                        <img src={`/flowers/${flower.id}.png`} alt={flower.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.style.backgroundColor = 'var(--color-primary)'; }} />
+                                                                    </div>
+                                                                    <span style={{ fontWeight: '500' }}>{flower.name}</span>
                                                                 </div>
-                                                                <span style={{ fontWeight: '500' }}>{flower.name}</span>
-                                                            </div>
-                                                            <span style={{ fontSize: '1.5rem', color: 'var(--color-primary)', display: 'flex' }}>+</span>
-                                                        </button>
-                                                    </div>
-                                                ))}
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                    {selectedCount > 0 && (
+                                                                        <span
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleRemoveBloom(selectedItem);
+                                                                            }}
+                                                                            title="Remove one"
+                                                                            style={{
+                                                                                width: '24px',
+                                                                                height: '24px',
+                                                                                borderRadius: '50%',
+                                                                                backgroundColor: '#f5f5f5',
+                                                                                color: 'var(--color-text)',
+                                                                                display: 'inline-flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontSize: '1rem',
+                                                                                fontWeight: 'bold',
+                                                                                lineHeight: 1,
+                                                                                border: '1px solid #ddd'
+                                                                            }}
+                                                                        >
+                                                                            -
+                                                                        </span>
+                                                                    )}
+                                                                    {selectedCount > 0 && (
+                                                                        <span style={{
+                                                                            fontFamily: 'var(--font-mono)',
+                                                                            fontSize: '0.85rem',
+                                                                            fontWeight: '600',
+                                                                            backgroundColor: 'var(--color-primary)',
+                                                                            color: 'white',
+                                                                            padding: '0.2rem 0.55rem',
+                                                                            borderRadius: '12px',
+                                                                            lineHeight: 1
+                                                                        }}>
+                                                                            x{selectedCount}
+                                                                        </span>
+                                                                    )}
+                                                                    <span style={{ fontSize: '1.5rem', color: 'var(--color-primary)', display: 'flex', lineHeight: 1 }}>+</span>
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     </div>
