@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, Check, Link as LinkIcon, Share2 } from 'lucide-react';
 import '../index.css';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -26,6 +26,9 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
     const [copied, setCopied] = useState(false);
     const [sharing, setSharing] = useState(false);
     const [loadedData, setLoadedData] = useState(null);
+    const [preparedUrl, setPreparedUrl] = useState('');
+    const [showFallbackModal, setShowFallbackModal] = useState(false);
+    const [fallbackUrl, setFallbackUrl] = useState('');
 
     const queryParams = new URLSearchParams(location.search);
     const gistParam = queryParams.get('g');
@@ -88,8 +91,8 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
 
     const selectedScenery = sceneries[displayScenery] || sceneries['bg3'];
 
-    const handleCopyLink = async () => {
-        setSharing(true);
+    const getLongUrl = () => {
+        if (isSharedView) return window.location.href;
         const compact = {
             b: displayArrangement.map(bloom => ({
                 f: bloom.flowerId,
@@ -99,62 +102,104 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
             r: displayRecipient, sg: displaySignoff,
             sn: displaySender, t: theme
         };
-
         const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const prodOrigin = 'https://bloomforyou.vercel.app';
         const targetOrigin = isLocal ? prodOrigin : window.location.origin;
-        const longUrl = `${targetOrigin}/final?data=${encodeURIComponent(base64)}`;
+        return `${targetOrigin}/final?data=${encodeURIComponent(base64)}`;
+    };
 
-        let shareUrl = longUrl;
+    useEffect(() => {
+        if (isSharedView) {
+            setPreparedUrl(window.location.href);
+            return;
+        }
+        const initialUrl = getLongUrl();
+        setPreparedUrl(initialUrl);
 
-        try {
-            const res = await fetch('/api/shorten', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: longUrl })
-            });
-            if (res.ok) {
-                const json = await res.json();
-                if (json.branded && json.branded.startsWith('http')) {
-                    shareUrl = json.branded;
-                } else if (json.short && json.short.startsWith('http')) {
-                    shareUrl = json.short;
+        fetch('/api/shorten', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: initialUrl })
+        })
+            .then(res => res.ok ? res.json() : null)
+            .then(json => {
+                if (json) {
+                    if (json.branded && json.branded.startsWith('http')) {
+                        setPreparedUrl(json.branded);
+                    } else if (json.short && json.short.startsWith('http')) {
+                        setPreparedUrl(json.short);
+                    }
                 }
-            }
-        } catch (_) {}
+            })
+            .catch(() => {});
+    }, [isSharedView]);
 
-        const copyToClipboard = async (text) => {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                try {
-                    await navigator.clipboard.writeText(text);
-                    return true;
-                } catch (_) {}
-            }
+    const copyToClipboard = async (text) => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (_) {}
+        }
+        try {
             const ta = document.createElement('textarea');
             ta.value = text;
             ta.setAttribute('readonly', '');
             ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
             document.body.appendChild(ta);
-            const selection = window.getSelection();
-            const range = document.createRange();
-            ta.contentEditable = 'true';
-            ta.readOnly = false;
-            range.selectNodeContents(ta);
-            selection.removeAllRanges();
-            selection.addRange(range);
+            ta.focus();
+            ta.select();
             ta.setSelectionRange(0, 999999);
             const success = document.execCommand('copy');
             document.body.removeChild(ta);
-            return success;
-        };
-
-        await copyToClipboard(shareUrl);
-
-        setSharing(false);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+            return !!success;
+        } catch (_) {
+            return false;
+        }
     };
+
+    const handleShare = async () => {
+        const urlToShare = preparedUrl || getLongUrl();
+
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'BloomsForYou 💐',
+                    text: displayRecipient ? `A bouquet for ${displayRecipient} 💐` : 'A bouquet just for you 💐',
+                    url: urlToShare
+                });
+                return;
+            } catch (err) {
+                if (err && err.name === 'AbortError') {
+                    return;
+                }
+            }
+        }
+
+        const success = await copyToClipboard(urlToShare);
+        if (success) {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } else {
+            setFallbackUrl(urlToShare);
+            setShowFallbackModal(true);
+        }
+    };
+
+    const handleDirectCopy = async () => {
+        const urlToShare = preparedUrl || getLongUrl();
+        const success = await copyToClipboard(urlToShare);
+        if (success) {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } else {
+            setFallbackUrl(urlToShare);
+            setShowFallbackModal(true);
+        }
+    };
+
+    const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
     return (
         <div className="page-container animate-fade-in" style={{ padding: '0.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -265,24 +310,50 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-                            {!isSharedView && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
+                                {!isSharedView && (
+                                    <button
+                                        className="btn btn-outline"
+                                        onClick={() => navigate('/message')}
+                                        style={{ flex: 1, padding: '0.75rem' }}
+                                    >
+                                        <ArrowLeft size={18} /> Back
+                                    </button>
+                                )}
                                 <button
-                                    className="btn btn-outline"
-                                    onClick={() => navigate('/message')}
-                                    style={{ flex: 1, padding: '0.75rem' }}
+                                    className={`btn ${copied ? 'btn-outline' : 'btn-primary'}`}
+                                    onClick={handleShare}
+                                    style={{ flex: 1, padding: '0.75rem', backgroundColor: copied ? '#4caf50' : '', color: copied ? 'white' : '', borderColor: copied ? '#4caf50' : '' }}
                                 >
-                                    <ArrowLeft size={18} /> Back
+                                    {copied ? (
+                                        <><Check size={18} /> Copied!</>
+                                    ) : canShare ? (
+                                        <><Share2 size={18} /> Share Bouquet</>
+                                    ) : (
+                                        <><LinkIcon size={18} /> Copy Link</>
+                                    )}
+                                </button>
+                            </div>
+
+                            {canShare && !isSharedView && (
+                                <button
+                                    onClick={handleDirectCopy}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        color: 'var(--color-primary)',
+                                        fontSize: '0.8rem',
+                                        fontFamily: 'var(--font-mono)',
+                                        textDecoration: 'underline',
+                                        cursor: 'pointer',
+                                        padding: '0.2rem',
+                                        marginTop: '0.2rem'
+                                    }}
+                                >
+                                    {copied ? '✓ Link copied!' : 'or copy link directly'}
                                 </button>
                             )}
-                            <button
-                                className={`btn ${copied ? 'btn-outline' : 'btn-primary'}`}
-                                onClick={handleCopyLink}
-                                disabled={sharing}
-                                style={{ flex: 1, padding: '0.75rem', backgroundColor: copied ? '#4caf50' : '', color: copied ? 'white' : '', borderColor: copied ? '#4caf50' : '' }}
-                            >
-                                {sharing ? 'Creating link...' : copied ? <><Check size={18} /> Copied!</> : <><LinkIcon size={18} /> Copy Link</>}
-                            </button>
                         </div>
 
                         <div style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--color-text-light)', fontSize: '0.75rem', fontFamily: 'var(--font-ndot)', letterSpacing: '1px' }}>
@@ -310,6 +381,91 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                     </div>
                 </div>
             </div>
+
+            {showFallbackModal && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000,
+                    padding: '1rem'
+                }}>
+                    <div style={{
+                        backgroundColor: 'var(--color-bg)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: '2rem',
+                        maxWidth: '400px',
+                        width: '100%',
+                        textAlign: 'center',
+                        boxShadow: 'var(--shadow-lg)',
+                        borderTop: '6px solid var(--color-accent)'
+                    }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔗</div>
+                        <h3 style={{
+                            color: 'var(--color-text)',
+                            margin: '0 0 0.5rem',
+                            fontSize: '1.2rem',
+                            fontFamily: 'var(--font-main)',
+                            fontWeight: '600'
+                        }}>
+                            Your Bouquet Link
+                        </h3>
+                        <p style={{
+                            color: 'var(--color-text-light)',
+                            fontSize: '0.85rem',
+                            lineHeight: '1.4',
+                            margin: '0 0 1rem'
+                        }}>
+                            Copy this link to share your bouquet:
+                        </p>
+                        <input
+                            type="text"
+                            readOnly
+                            value={fallbackUrl}
+                            onClick={(e) => e.target.select()}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                borderRadius: 'var(--radius-sm)',
+                                border: '1px solid rgba(0,0,0,0.15)',
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '0.8rem',
+                                backgroundColor: 'white',
+                                color: 'var(--color-text)',
+                                marginBottom: '1.25rem',
+                                textAlign: 'center',
+                                outline: 'none'
+                            }}
+                        />
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button
+                                className="btn btn-outline"
+                                onClick={() => setShowFallbackModal(false)}
+                                style={{ flex: 1, padding: '0.75rem' }}
+                            >
+                                Close
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={async () => {
+                                    await copyToClipboard(fallbackUrl);
+                                    setShowFallbackModal(false);
+                                    setCopied(true);
+                                    setTimeout(() => setCopied(false), 2000);
+                                }}
+                                style={{ flex: 1, padding: '0.75rem' }}
+                            >
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
