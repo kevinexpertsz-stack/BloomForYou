@@ -84,102 +84,53 @@ const Home = ({ theme, setTheme }) => {
                 width: '100%',
                 gap: 'clamp(0.6rem, 2.5vh, 1.4rem)',
             }}>
-                <div className="logo-container" style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <img
-                            src={themeImages[theme] || themeImages['default']}
-                            alt="BloomsForYou Logo"
-                            onClick={handleThemeChange}
-                            style={{
-                                width: 'clamp(90px, 20vw, 140px)',
-                                height: 'clamp(90px, 20vw, 140px)',
-                                objectFit: 'contain',
-                                filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.07))',
-                                cursor: 'pointer',
-                                transition: 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                                transform: isPopping ? 'rotate(360deg) scale(1.18)' : 'rotate(0deg) scale(1)',
-                                animation: isPopping ? 'none' : 'gentleFloat 4s ease-in-out infinite',
-                                display: 'block',
-                                userSelect: 'none',
-                                WebkitTouchCallout: 'none'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isPopping) e.currentTarget.style.transform = 'scale(1.08) rotate(5deg)';
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isPopping) e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-                            }}
-                        />
-                        {petals.map(p => (
-                            <span
-                                key={p.id}
-                                style={{
-                                    position: 'absolute',
-                                    pointerEvents: 'none',
-                                    fontSize: '1.25rem',
-                                    left: '50%',
-                                    top: '50%',
-                                    marginLeft: '-10px',
-                                    marginTop: '-10px',
-                                    '--tx': `${p.tx}px`,
-                                    '--ty': `${p.ty}px`,
-                                    '--scale': p.scale,
-                                    animation: 'burstPetal 0.75s cubic-bezier(0.25, 0.8, 0.25, 1) forwards',
-                                    zIndex: 20,
-                                    userSelect: 'none'
-                                }}
-                            >
-                                {p.emoji}
-                            </span>
-                        ))}
-                    </div>
-
-                    <button
+                <div className="logo-container" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                        src={themeImages[theme] || themeImages['default']}
+                        alt="BloomsForYou Logo"
                         onClick={handleThemeChange}
                         style={{
-                            marginTop: '0.45rem',
-                            background: 'rgba(255, 255, 255, 0.88)',
-                            backdropFilter: 'blur(8px)',
-                            WebkitBackdropFilter: 'blur(8px)',
-                            border: '1px solid rgba(0, 0, 0, 0.08)',
-                            borderRadius: '20px',
-                            padding: '0.35rem 0.9rem',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.45rem',
+                            width: 'clamp(90px, 20vw, 140px)',
+                            height: 'clamp(90px, 20vw, 140px)',
+                            objectFit: 'contain',
+                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.07))',
                             cursor: 'pointer',
-                            boxShadow: 'var(--shadow-sm)',
-                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                            userSelect: 'none'
+                            transition: 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            transform: isPopping ? 'rotate(360deg) scale(1.18)' : 'rotate(0deg) scale(1)',
+                            animation: isPopping ? 'none' : 'gentleFloat 4s ease-in-out infinite',
+                            display: 'block',
+                            userSelect: 'none',
+                            WebkitTouchCallout: 'none'
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                            e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                            if (!isPopping) e.currentTarget.style.transform = 'scale(1.08) rotate(5deg)';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                            if (!isPopping) e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
                         }}
-                    >
-                        <span style={{ fontSize: '1rem', lineHeight: 1 }}>{themeDetails[theme]?.emoji || '🌸'}</span>
-                        <span style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: '0.78rem',
-                            fontWeight: '600',
-                            color: 'var(--color-text)',
-                            letterSpacing: '0.5px'
-                        }}>
-                            {themeDetails[theme]?.name || 'Theme'}
+                    />
+                    {petals.map(p => (
+                        <span
+                            key={p.id}
+                            style={{
+                                position: 'absolute',
+                                pointerEvents: 'none',
+                                fontSize: '1.25rem',
+                                left: '50%',
+                                top: '50%',
+                                marginLeft: '-10px',
+                                marginTop: '-10px',
+                                '--tx': `${p.tx}px`,
+                                '--ty': `${p.ty}px`,
+                                '--scale': p.scale,
+                                animation: 'burstPetal 0.75s cubic-bezier(0.25, 0.8, 0.25, 1) forwards',
+                                zIndex: 20,
+                                userSelect: 'none'
+                            }}
+                        >
+                            {p.emoji}
                         </span>
-                        <span style={{
-                            fontSize: '0.72rem',
-                            color: 'var(--color-primary)',
-                            fontFamily: 'var(--font-mono)',
-                            fontWeight: '500'
-                        }}>
-                            · tap to change ✨
-                        </span>
-                    </button>
+                    ))}
                 </div>
 
                 <h1
