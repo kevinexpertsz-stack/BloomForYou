@@ -209,17 +209,20 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                     <h2 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', textTransform: 'uppercase' }}>Fresh Blooms Just For You!</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1.5rem, 3vw, 3rem)', justifyContent: 'center', width: '100%', maxWidth: '960px', marginBottom: '2.5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1.5rem, 3vw, 3rem)', justifyContent: 'center', alignItems: 'flex-start', width: '100%', maxWidth: '960px', marginBottom: '2.5rem' }}>
 
                     <div style={{
                         width: '100%',
                         maxWidth: '430px',
                         aspectRatio: '4 / 5',
-                        maxHeight: '70vh',
+                        maxHeight: '65vh',
                         overflow: 'hidden',
                         position: 'relative',
                         boxShadow: 'var(--shadow-lg)',
-                        borderRadius: 'var(--radius-lg)'
+                        borderRadius: 'var(--radius-lg)',
+                        alignSelf: 'flex-start',
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none'
                     }}>
                         <div style={{
                             position: 'absolute',
@@ -236,6 +239,7 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                         <img
                             src="/background/Bouquet.png"
                             alt="Bouquet Wrapper"
+                            draggable={false}
                             style={{
                                 position: 'absolute',
                                 bottom: '0',
@@ -246,7 +250,8 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                 objectPosition: 'bottom center',
                                 zIndex: 0,
                                 pointerEvents: 'none',
-                                userSelect: 'none'
+                                userSelect: 'none',
+                                WebkitUserSelect: 'none'
                             }}
                         />
 
@@ -263,6 +268,9 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
+                                    pointerEvents: 'none',
+                                    userSelect: 'none',
+                                    WebkitUserSelect: 'none'
                                 }}
                             >
                                 <div style={{
@@ -271,9 +279,30 @@ const FinalBouquet = ({ bouquetArrangement, scenery, message, recipient, signoff
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    position: 'relative'
+                                    position: 'relative',
+                                    pointerEvents: 'none',
+                                    userSelect: 'none',
+                                    WebkitUserSelect: 'none'
                                 }}>
-                                    <img src={`/flowers/${bloom.flowerId}.png`} alt={bloom.name} style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.15))', pointerEvents: 'none' }} onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.style.backgroundColor = 'var(--color-primary)'; e.target.parentElement.style.borderRadius = '50%'; }} />
+                                    <img
+                                        src={`/flowers/${bloom.flowerId}.png`}
+                                        alt={bloom.name}
+                                        draggable={false}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'contain',
+                                            filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.15))',
+                                            pointerEvents: 'none',
+                                            userSelect: 'none',
+                                            WebkitUserSelect: 'none'
+                                        }}
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.parentElement.style.backgroundColor = 'var(--color-primary)';
+                                            e.target.parentElement.style.borderRadius = '50%';
+                                        }}
+                                    />
                                 </div>
                             </div>
                         ))}

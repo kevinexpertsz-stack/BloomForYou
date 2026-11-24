@@ -205,7 +205,9 @@ const BouquetCustomizer = ({ selectedBlooms, bouquetArrangement, setBouquetArran
                             overflow: 'hidden',
                             position: 'relative',
                             touchAction: 'none',
-                            margin: '0 auto'
+                            margin: '0 auto',
+                            userSelect: 'none',
+                            WebkitUserSelect: 'none'
                         }}
                     >
                         <div style={{
