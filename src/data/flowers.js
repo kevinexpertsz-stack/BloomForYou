@@ -49,16 +49,6 @@ export const flowerData = {
                 { id: "4-Aistromeria", name: "Alstroemeria" },
                 { id: "4-Lilac", name: "Lilac" }
             ]
-        },
-        {
-            id: "tall-linear",
-            name: "Tall & Linear",
-            description: "Stately blooms on long stems, perfect for adding height and architectural structure.",
-            flowers: [
-                { id: "5-Snapdragon", name: "Snapdragon" },
-                { id: "5-Delphinium", name: "Delphinium" },
-                { id: "5-Gladioulus", name: "Gladiolus" }
-            ]
         }
     ]
 };

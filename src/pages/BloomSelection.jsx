@@ -102,179 +102,135 @@ const BloomSelection = ({ selectedBlooms, setSelectedBlooms, theme, setTheme }) 
                 <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
 
                     <div style={{ flex: '1 1 60%', minWidth: '300px' }}>
-                        {activeCategory ? (
-                            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                                <div style={{ flex: '1 1 280px', width: '100%' }}>
-                                    <div className="animate-fade-in" style={{ marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+                            {flowerData.categories.map((category) => {
+                                const isActive = activeCategory?.id === category.id;
+                                return (
+                                    <div key={category.id} className="animate-fade-in" style={{ width: '100%' }}>
                                         <button
-                                            onClick={() => handleCategoryClick(activeCategory)}
+                                            onClick={() => handleCategoryClick(category)}
                                             style={{
                                                 width: '100%',
-                                                padding: '1.5rem',
+                                                padding: '1.25rem 1.5rem',
                                                 borderRadius: 'var(--radius-lg)',
                                                 border: '2px solid',
-                                                borderColor: 'var(--color-primary)',
+                                                borderColor: isActive ? 'var(--color-primary)' : 'transparent',
                                                 backgroundColor: 'white',
-                                                boxShadow: 'var(--shadow-sm)',
+                                                boxShadow: isActive ? 'var(--shadow-md)' : 'var(--shadow-sm)',
                                                 cursor: 'pointer',
                                                 textAlign: 'left',
                                                 transition: 'var(--transition)'
                                             }}
                                             className="category-card"
                                         >
-                                            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{activeCategory.name}</h3>
-                                            <div style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                {activeCategory.flowers.slice(0, 3).map(f => f.name).join(', ')}...
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{category.name}</h3>
+                                                <span style={{ fontSize: '1.2rem', color: 'var(--color-primary)', lineHeight: 1 }}>
+                                                    {isActive ? '−' : '+'}
+                                                </span>
                                             </div>
-                                            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', marginTop: '0.5rem', lineHeight: '1.4' }}>{activeCategory.description}</p>
-                                        </button>
-
-                                        <div style={{
-                                            marginTop: '1rem',
-                                            padding: '1rem',
-                                            backgroundColor: 'rgba(255,255,255,0.5)',
-                                            borderRadius: 'var(--radius-md)',
-                                            border: '1px solid rgba(0,0,0,0.05)',
-                                            animation: 'fadeIn 0.3s ease'
-                                        }}>
-                                            <h4 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Available Flowers:</h4>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                                {activeCategory.flowers.map(flower => {
-                                                    const selectedItem = selectedBlooms.find(b => b.flower.id === flower.id);
-                                                    const selectedCount = selectedItem ? selectedItem.quantity : 0;
-
-                                                    return (
-                                                        <div key={flower.id}>
-                                                            <button
-                                                                onClick={() => handleFlowerClick(flower)}
-                                                                style={{
-                                                                    width: '100%',
-                                                                    padding: '0.75rem 1rem',
-                                                                    borderRadius: 'var(--radius-sm)',
-                                                                    border: selectedCount > 0 ? '1.5px solid var(--color-primary)' : '1px solid #eee',
-                                                                    backgroundColor: 'white',
-                                                                    cursor: 'pointer',
-                                                                    textAlign: 'left',
-                                                                    display: 'flex',
-                                                                    justifyContent: 'space-between',
-                                                                    alignItems: 'center',
-                                                                    transition: 'var(--transition)'
-                                                                }}
-                                                            >
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#f0f0f0', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                                                                        <img src={`/flowers/${flower.id}.png`} alt={flower.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.style.backgroundColor = 'var(--color-primary)'; }} />
-                                                                    </div>
-                                                                    <span style={{ fontWeight: '500' }}>{flower.name}</span>
-                                                                </div>
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                                    {selectedCount > 0 && (
-                                                                        <span
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                handleRemoveBloom(selectedItem);
-                                                                            }}
-                                                                            title="Remove one"
-                                                                            style={{
-                                                                                width: '24px',
-                                                                                height: '24px',
-                                                                                borderRadius: '50%',
-                                                                                backgroundColor: '#f5f5f5',
-                                                                                color: 'var(--color-text)',
-                                                                                display: 'inline-flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                fontSize: '1rem',
-                                                                                fontWeight: 'bold',
-                                                                                lineHeight: 1,
-                                                                                border: '1px solid #ddd'
-                                                                            }}
-                                                                        >
-                                                                            -
-                                                                        </span>
-                                                                    )}
-                                                                    {selectedCount > 0 && (
-                                                                        <span style={{
-                                                                            fontFamily: 'var(--font-mono)',
-                                                                            fontSize: '0.85rem',
-                                                                            fontWeight: '600',
-                                                                            backgroundColor: 'var(--color-primary)',
-                                                                            color: 'white',
-                                                                            padding: '0.2rem 0.55rem',
-                                                                            borderRadius: '12px',
-                                                                            lineHeight: 1
-                                                                        }}>
-                                                                            x{selectedCount}
-                                                                        </span>
-                                                                    )}
-                                                                    <span style={{ fontSize: '1.5rem', color: 'var(--color-primary)', display: 'flex', lineHeight: 1 }}>+</span>
-                                                                </div>
-                                                            </button>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div style={{ flex: '1 1 280px', width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    {flowerData.categories.filter(c => c.id !== activeCategory.id).map(category => (
-                                        <div key={category.id} className="animate-fade-in">
-                                            <button
-                                                onClick={() => handleCategoryClick(category)}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '1.5rem',
-                                                    borderRadius: 'var(--radius-lg)',
-                                                    border: '2px solid transparent',
-                                                    backgroundColor: 'white',
-                                                    boxShadow: 'var(--shadow-sm)',
-                                                    textAlign: 'left',
-                                                    transition: 'var(--transition)'
-                                                }}
-                                                className="category-card"
-                                            >
-                                                <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{category.name}</h3>
-                                                <div style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                    {category.flowers.slice(0, 3).map(f => f.name).join(', ')}...
-                                                </div>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="categories-grid" style={{
-                                columnWidth: '250px',
-                                columnGap: '1.5rem',
-                                marginBottom: '2rem'
-                            }}>
-                                {flowerData.categories.map((category, index) => (
-                                    <div key={category.id} className={`delay-${(index % 4) + 1} animate-fade-in`} style={{ breakInside: 'avoid', pageBreakInside: 'avoid', marginBottom: '1.5rem' }}>
-                                        <button
-                                            onClick={() => handleCategoryClick(category)}
-                                            style={{
-                                                width: '100%',
-                                                padding: '1.5rem',
-                                                borderRadius: 'var(--radius-lg)',
-                                                border: '2px solid transparent',
-                                                backgroundColor: 'white',
-                                                boxShadow: 'var(--shadow-sm)',
-                                                textAlign: 'left',
-                                                transition: 'var(--transition)'
-                                            }}
-                                            className="category-card"
-                                        >
-                                            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{category.name}</h3>
-                                            <div style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                            <div style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', marginTop: '0.4rem', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                                                 {category.flowers.slice(0, 3).map(f => f.name).join(', ')}...
                                             </div>
+                                            {isActive && (
+                                                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', marginTop: '0.5rem', lineHeight: '1.4' }}>
+                                                    {category.description}
+                                                </p>
+                                            )}
                                         </button>
+
+                                        {isActive && (
+                                            <div style={{
+                                                marginTop: '0.75rem',
+                                                padding: '1rem',
+                                                backgroundColor: 'rgba(255,255,255,0.65)',
+                                                borderRadius: 'var(--radius-md)',
+                                                border: '1px solid rgba(0,0,0,0.05)',
+                                                animation: 'fadeIn 0.3s ease'
+                                            }}>
+                                                <h4 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Available Flowers:</h4>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    {category.flowers.map(flower => {
+                                                        const selectedItem = selectedBlooms.find(b => b.flower.id === flower.id);
+                                                        const selectedCount = selectedItem ? selectedItem.quantity : 0;
+
+                                                        return (
+                                                            <div key={flower.id}>
+                                                                <button
+                                                                    onClick={() => handleFlowerClick(flower)}
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        padding: '0.75rem 1rem',
+                                                                        borderRadius: 'var(--radius-sm)',
+                                                                        border: selectedCount > 0 ? '1.5px solid var(--color-primary)' : '1px solid #eee',
+                                                                        backgroundColor: 'white',
+                                                                        cursor: 'pointer',
+                                                                        textAlign: 'left',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'space-between',
+                                                                        alignItems: 'center',
+                                                                        transition: 'var(--transition)'
+                                                                    }}
+                                                                >
+                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                                        <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#f0f0f0', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                                                                            <img src={`/flowers/${flower.id}.png`} alt={flower.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.style.backgroundColor = 'var(--color-primary)'; }} />
+                                                                        </div>
+                                                                        <span style={{ fontWeight: '500' }}>{flower.name}</span>
+                                                                    </div>
+                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                        {selectedCount > 0 && (
+                                                                            <span
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    handleRemoveBloom(selectedItem);
+                                                                                }}
+                                                                                title="Remove one"
+                                                                                style={{
+                                                                                    width: '24px',
+                                                                                    height: '24px',
+                                                                                    borderRadius: '50%',
+                                                                                    backgroundColor: '#f5f5f5',
+                                                                                    color: 'var(--color-text)',
+                                                                                    display: 'inline-flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center',
+                                                                                    fontSize: '1rem',
+                                                                                    fontWeight: 'bold',
+                                                                                    lineHeight: 1,
+                                                                                    border: '1px solid #ddd'
+                                                                                }}
+                                                                            >
+                                                                                -
+                                                                            </span>
+                                                                        )}
+                                                                        {selectedCount > 0 && (
+                                                                            <span style={{
+                                                                                fontFamily: 'var(--font-mono)',
+                                                                                fontSize: '0.85rem',
+                                                                                fontWeight: '600',
+                                                                                backgroundColor: 'var(--color-primary)',
+                                                                                color: 'white',
+                                                                                padding: '0.2rem 0.55rem',
+                                                                                borderRadius: '12px',
+                                                                                lineHeight: 1
+                                                                            }}>
+                                                                                x{selectedCount}
+                                                                            </span>
+                                                                        )}
+                                                                        <span style={{ fontSize: '1.5rem', color: 'var(--color-primary)', display: 'flex', lineHeight: 1 }}>+</span>
+                                                                    </div>
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                );
+                            })}
+                        </div>
                     </div>
 
                     <div style={{ flex: '1 1 30%', minWidth: '250px' }}>
